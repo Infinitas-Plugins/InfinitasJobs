@@ -24,9 +24,13 @@ function unserialize_jobs($className) {
 	}
 
 	if (!empty($plugin)) {
-		$plugin = "{$plugin}.";
+		//$plugin = "{$plugin}.";
 	}
 
+	if($plugin) {
+		return require_once CakePlugin::path($plugin) . 'Lib' . DS . 'Job' . DS . $className . '.php';
+	}
+	
 	App::uses($className, "{$plugin}Job");
 }
 
