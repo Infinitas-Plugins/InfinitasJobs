@@ -13,25 +13,12 @@ App::uses('DJJob', 'Djjob.Vendor');
  * @package default
  */
 function unserialize_jobs($className) {
-	$plugin = null;
-	if (strstr($className, '_')) {
-		list($plugin, $className) = explode('_', $className);
+	$pluginDot = null;
+	if ($plugin = strstr($className, '_', true)) {
+		$pluginDot = $plugin . '.';
 	}
 
-	if (empty($className)) {
-		$className = $plugin;
-		$plugin = null;
-	}
-
-	if (!empty($plugin)) {
-		//$plugin = "{$plugin}.";
-	}
-
-	if($plugin) {
-		return require_once CakePlugin::path($plugin) . 'Lib' . DS . 'Job' . DS . $className . '.php';
-	}
-	
-	App::uses($className, "{$plugin}Job");
+	App::uses($className, $pluginDot . 'Job');
 }
 
 /**
