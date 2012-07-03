@@ -64,20 +64,9 @@ class RunTask extends AppShell {
 			"max_attempts" => $this->params['max'],
 		));
 
-		$debug = Configure::read('debug');
-		if($debug >= 2) {
-			$debug = 2;
-		}
+		$debug = 4 - (Configure::read('debug') * 2);
 
-		if($debug = 1) {
-			$debug = 3;
-		}
-
-		if(!$debug) {
-			$debug = 4;
-		}
-
-		$worker->setLogLevel($debug);
+		//$worker->setLogLevel($debug);
 		$worker->start();
 	}
 
