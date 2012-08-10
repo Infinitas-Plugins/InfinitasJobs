@@ -1,10 +1,10 @@
 <?php
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 
 /**
- * CakeDjjob Component
+ * InfinitasJobs Component
  *
  * Wrapper around DJJob library
  *
@@ -14,7 +14,7 @@ App::uses('DJJob', 'Djjob.Vendor');
  * @subpackage  cake_djjob.controller.components
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class CakeDjjobComponent extends Component {
+class InfinitasJobsComponent extends Component {
 
 	public $settings = array(
 		'connection'=> 'default',
@@ -69,7 +69,7 @@ class CakeDjjobComponent extends Component {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *

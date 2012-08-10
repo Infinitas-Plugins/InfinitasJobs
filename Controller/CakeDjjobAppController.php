@@ -1,6 +1,6 @@
 <?php
 /**
- * CakeDjjob Application level Controller
+ * InfinitasJobs Application level Controller
  *
  * This file is plugin-wide controller file. You can put all
  * plugin-wide controller-related methods here.
@@ -16,5 +16,5 @@
  * @subpackage    cake_djjob.controller
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class CakeDjjobAppController extends AppController {
+class InfinitasJobsAppController extends AppController {
 }

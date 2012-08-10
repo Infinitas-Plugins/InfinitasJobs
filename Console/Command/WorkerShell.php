@@ -1,11 +1,11 @@
 <?php
 App::uses('AppShell', 'Console/Command');
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 
 /**
- * Convenience method to unserialize CakeDjjob classes properly
+ * Convenience method to unserialize InfinitasJobs classes properly
  *
  * Uses _ (underscore) to denote plugins, since php classnames
  * cannot use periods
@@ -28,7 +28,7 @@ function unserialize_jobs($className) {
  */
 class WorkerShell extends AppShell {
 
-	public $tasks = array('CakeDjjob.Cleanup', 'CakeDjjob.Run', 'CakeDjjob.Status');
+	public $tasks = array('InfinitasJobs.Cleanup', 'InfinitasJobs.Run', 'InfinitasJobs.Status');
 
 /**
  * Override startup
@@ -70,7 +70,7 @@ class WorkerShell extends AppShell {
  * @return void
  */
 	public function main() {
-		$this->out(__d('cake_djjob', '<info>CakeDjjob Worker Shell</info>'));
+		$this->out(__d('cake_djjob', '<info>InfinitasJobs Worker Shell</info>'));
 		$this->hr();
 		$this->out(__d('cake_djjob', '[R]un jobs in the system'));
 		$this->out(__d('cake_djjob', '[S]tatus of system'));

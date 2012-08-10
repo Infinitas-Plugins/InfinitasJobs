@@ -1,7 +1,7 @@
 <?php
-App::uses('CakeJob', 'CakeDjjob.Job');
+App::uses('CakeJob', 'InfinitasJobs.Job');
 
-class CakeDjjob_TestJob extends CakeJob {
+class InfinitasJobs_TestJob extends CakeJob {
 
 	function perform() {
 		$this->out('Test Job');

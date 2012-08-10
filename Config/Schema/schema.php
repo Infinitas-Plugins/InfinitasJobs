@@ -1,18 +1,15 @@
-<?php 
-/* SVN FILE: $Id$ */
-/* App schema generated on: 2011-04-10 19:04:44 : 1302463184*/
-class CakeDjjobSchema extends CakeSchema {
-	var $name = 'CakeDjjob';
+<?php
+class InfinitasJobsSchema extends CakeSchema {
 
-	function before($event = array()) {
+	public function before($event = array()) {
 		return true;
 	}
 
-	function after($event = array()) {
+	public function after($event = array()) {
 	}
 
-	var $jobs = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
+	public $infinitas_jobs = array(
+		'id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'key' => 'primary', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'handler' => array('type' => 'text', 'null' => false, 'default' => NULL, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'queue' => array('type' => 'string', 'null' => false, 'default' => 'default', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'attempts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10),

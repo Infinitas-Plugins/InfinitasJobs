@@ -1,6 +1,6 @@
 <?php
 /**
- * CakeDjjobDummiesController class.
+ * InfinitasJobsDummiesController class.
  *
  * PHP versions 4 and 5
  *
@@ -13,7 +13,7 @@
  * @subpackage    cake_djjob.controller
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class CakeDjjobDummiesController extends CakeDjjobAppController {
+class InfinitasJobsDummiesController extends InfinitasJobsAppController {
 
 /**
  * The name of this controller. Controller names are plural, named after the model they manipulate.
@@ -22,7 +22,7 @@ class CakeDjjobDummiesController extends CakeDjjobAppController {
  * @access public
  * @link http://book.cakephp.org/view/959/Controller-Attributes
  */
-	public $name = 'CakeDjjobDummies';
+	public $name = 'InfinitasJobsDummies';
 
 /**
  * An array containing the class names of models this controller uses.

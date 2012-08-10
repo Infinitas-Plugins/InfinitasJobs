@@ -1,11 +1,11 @@
 <?php
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 
 /**
- * CakeDjjob Model Behavior
- * 
+ * InfinitasJobs Model Behavior
+ *
  * Wrapper around DJJob library
  *
  * @copyright    Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
@@ -14,7 +14,7 @@ App::uses('DJJob', 'Djjob.Vendor');
  * @subpackage   cake_djjob.models.behaviors
  * @license      MIT License (http://www.opensource.org/licenses/mit-license.php)
  **/
-class CakeDjjobBehavior extends ModelBehavior {
+class InfinitasJobsBehavior extends ModelBehavior {
 
 /**
  * Contains configuration settings for use with individual model objects.
@@ -31,7 +31,7 @@ class CakeDjjobBehavior extends ModelBehavior {
 	);
 
 /**
- * Initiate CakeDjjob Behavior
+ * Initiate InfinitasJobs Behavior
  *
  * @param object $model
  * @param array $config
@@ -68,7 +68,7 @@ class CakeDjjobBehavior extends ModelBehavior {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *

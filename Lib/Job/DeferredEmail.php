@@ -1,6 +1,6 @@
 <?php
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 App::uses('CakeEmail', 'Network/Email');
 
 /**
@@ -67,7 +67,7 @@ class DeferredEmail extends CakeJob {
 /**
  * Constructs the initial email object
  *
- * @param string $email 
+ * @param string $email
  * @param array $vars Array of variables for the email
  */
 	public function __construct($email, $vars = array()) {
@@ -195,7 +195,7 @@ class DeferredEmail extends CakeJob {
 
 /**
  * Allow emails to be sent in a delayed fashion via
- * CakeDjjob
+ * InfinitasJobs
  *
  * @return void
  */

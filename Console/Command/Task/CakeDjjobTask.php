@@ -1,12 +1,12 @@
 <?php
 App::uses('AppShell', 'Console/Command');
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 
 /**
- * CakeDjjob Task
- * 
+ * InfinitasJobs Task
+ *
  * Wrapper around DJJob library for shells
  *
  * @copyright     Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
@@ -15,7 +15,7 @@ App::uses('DJJob', 'Djjob.Vendor');
  * @subpackage    cake_djjob.shells.tasks
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  **/
-class CakeDjjobTask extends AppShell {
+class InfinitasJobsTask extends AppShell {
 
 /**
  * Contains configuration settings for use with individual model objects.
@@ -32,7 +32,7 @@ class CakeDjjobTask extends AppShell {
 	);
 
 /**
- * Initiate CakeDjjob Task
+ * Initiate InfinitasJobs Task
  *
  * @param object $model
  * @param array $config
@@ -69,7 +69,7 @@ class CakeDjjobTask extends AppShell {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
