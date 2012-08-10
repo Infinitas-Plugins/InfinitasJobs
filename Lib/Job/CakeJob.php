@@ -10,7 +10,7 @@ App::uses('CakeRequest', 'Network');
 App::uses('CakeResponse', 'Network');
 App::uses('Controller', 'Controller');
 
-App::uses('CakeDjjobLib', 'CakeDjjob.Lib');
+App::uses('InfinitasJobsLib', 'InfinitasJobs.Lib');
 
 class CakeJob extends Object {
 

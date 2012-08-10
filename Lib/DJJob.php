@@ -115,7 +115,7 @@ class DJWorker extends DJBase {
         list($hostname, $pid) = array(trim(`hostname`), getmypid());
         $this->name = "host::$hostname pid::$pid";
 
-		$this->pidFile = CakePlugin::path('CakeDjjob') . 'Config' . DS .'Pid' . DS . $this->queue .'.pid';
+		$this->pidFile = InfinitasPlugin::path('InfinitasJobs') . 'Config' . DS .'Pid' . DS . $this->queue .'.pid';
 		$this->pid = $pid;
 
         if (function_exists("pcntl_signal")) {

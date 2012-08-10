@@ -1,10 +1,10 @@
 <?php
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Job');
-App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeJob', 'InfinitasJobs.Job');
+App::uses('DJJob', 'InfinitasJobs.Lib');
 
 /**
- * CakeDjjob Component
+ * InfinitasJobs Lib
  *
  * Wrapper around DJJob library
  *
@@ -14,7 +14,7 @@ App::uses('DJJob', 'Djjob.Vendor');
  * @subpackage  cake_djjob.controller.components
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class CakeDjjobLib extends Object {
+class InfinitasJobsLib extends Object {
 /**
  * Enqueues Jobs using DJJob
  *
