@@ -14,16 +14,6 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class InfinitasJobsDummiesController extends InfinitasJobsAppController {
-
-/**
- * The name of this controller. Controller names are plural, named after the model they manipulate.
- *
- * @var string
- * @access public
- * @link http://book.cakephp.org/view/959/Controller-Attributes
- */
-	public $name = 'InfinitasJobsDummies';
-
 /**
  * An array containing the class names of models this controller uses.
  *

@@ -380,8 +380,8 @@ class DJJob extends DJBase {
 
     public static function enqueue($handler, $queue = "default", $run_at = null) {
         $affected = self::runUpdate(
-            "INSERT INTO infinitas_jobs (handler, queue, run_at, created_at) VALUES(?, ?, ?, NOW())",
-            array(serialize($handler), (string) $queue, $run_at)
+            "INSERT INTO infinitas_jobs (id, handler, queue, run_at, created_at) VALUES(?, ?, ?, ?, NOW())",
+            array(String::uuid(), serialize($handler), (string)$queue, $run_at)
         );
 
         if ($affected < 1) {
@@ -393,14 +393,15 @@ class DJJob extends DJBase {
     }
 
     public static function bulkEnqueue($handlers, $queue = "default", $run_at = null) {
-        $sql = "INSERT INTO infinitas_jobs (handler, queue, run_at, created_at) VALUES";
-        $sql .= implode(",", array_fill(0, count($handlers), "(?, ?, ?, NOW())"));
+        $sql = "INSERT INTO infinitas_jobs (id, handler, queue, run_at, created_at) VALUES";
+        $sql .= implode(",", array_fill(0, count($handlers), "(?, ?, ?, ?, NOW())"));
 
         $parameters = array();
         foreach ($handlers as $handler) {
-            $parameters []= serialize($handler);
-            $parameters []= (string) $queue;
-            $parameters []= $run_at;
+			$parameters[] = String::uuid();
+            $parameters[]= serialize($handler);
+            $parameters[]= (string) $queue;
+            $parameters[]= $run_at;
         }
         $affected = self::runUpdate($sql, $parameters);
 

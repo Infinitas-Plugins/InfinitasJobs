@@ -1,5 +1,5 @@
 <?php
-	$config['CakeDjjob'] = array(
+	$config['InfinitasJobs'] = array(
 		'connection'=> 'default',
 		'type' => 'mysql',
 	);
