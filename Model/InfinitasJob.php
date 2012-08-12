@@ -39,6 +39,18 @@ class InfinitasJob extends InfinitasJobsAppModel {
 	);
 
 /**
+ * @brief custom finds
+ *
+ * @var array
+ */
+	public $findMethods = array(
+		'job' => true,
+		'handler' => true,
+		'attempts' => true,
+		'status' => true
+	);
+
+/**
  * hasOne relations for this model
  *
  * @access public
@@ -178,5 +190,146 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		);
 
 		return $data;
+	}
+
+/**
+ * acquireLock
+ *
+ * @param type $id
+ * @param type $process
+ */
+	public function lockJob($id, $process) {
+
+	}
+
+/**
+ * releaseLocks
+ *
+ * @param type $processId
+ */
+	public function unlockJobs($processId) {
+
+	}
+
+/**
+ * releaseLock
+ *
+ * @param type $processId
+ */
+	public function unlockJob($processId) {
+
+	}
+
+/**
+ * finish
+ *
+ * @param type $id
+ */
+	public function finishJob($id, $error = null) {
+
+	}
+
+/**
+ * retryLater
+ *
+ * @param type $id
+ * @param type $delay
+ */
+	public function retryJob($id, $delay = null) {
+
+	}
+
+/**
+ * enque
+ *
+ * @param type $handler
+ * @param type $queue
+ * @param type $run_at
+ */
+	public function enque($handler, $queue = 'default', $run_at = null) {
+		if(is_array($handler)) {
+			foreach($handler as $data) {
+				self::enque($data, $queue, $run_at);
+			}
+		}
+	}
+
+/**
+ * bulkEnqueue
+ *
+ * @param type $handlers
+ * @param type $queue
+ * @param type $run_at
+ */
+	public function bulkEnqueue($handlers, $queue = 'default', $run_at = null) {
+
+	}
+
+/**
+ * getNewJob
+ *
+ * @param type $state
+ * @param type $query
+ * @param type $results
+ * @return type
+ */
+	protected function _findJob($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+
+			return $query;
+		}
+
+		return $results;
+	}
+
+/**
+ * getHandler
+ *
+ * @param type $state
+ * @param type $query
+ * @param type $results
+ * @return type
+ */
+	protected function _findHandler($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+
+			return $query;
+		}
+
+		return $results;
+	}
+
+/**
+ * getAttempts
+ *
+ * @param type $state
+ * @param type $query
+ * @param type $results
+ * @return type
+ */
+	protected function _findAttempts($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+
+			return $query;
+		}
+
+		return $results;
+	}
+
+/**
+ * getHandler
+ *
+ * @param type $state
+ * @param type $query
+ * @param type $results
+ * @return type
+ */
+	protected function _findStatus($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+
+			return $query;
+		}
+
+		return $results;
 	}
 }
