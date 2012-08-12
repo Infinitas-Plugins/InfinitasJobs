@@ -14,18 +14,12 @@
 	 * Licensed under The MIT License
 	 * Redistributions of files must retain the above copyright notice.
 	 */
-	echo $this->Form->create('InfinitasJob');
+	echo $this->Form->create('InfinitasJobQueue');
 		echo $this->Infinitas->adminEditHead(); ?>
 		<fieldset>
-			<h1><?php echo __('Infinitas jobs'); ?></h1><?php
+			<h1><?php echo __('Infinitas job queues'); ?></h1><?php
 				echo $this->Form->input('id');
-				echo $this->Form->input('attempts');
-				echo $this->Form->input('run_at');
-				echo $this->Form->input('locked_at');
-				echo $this->Form->input('failed_at');
-				echo $this->Form->input('created_at');
-				echo $this->Infinitas->wysiwyg('InfinitasJob.handler');
-				echo $this->Infinitas->wysiwyg('InfinitasJob.error');
+				echo $this->Form->input('name');
 			?>
 		</fieldset>
 

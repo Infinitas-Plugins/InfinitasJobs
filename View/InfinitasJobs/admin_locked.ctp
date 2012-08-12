@@ -51,7 +51,18 @@ echo $this->Infinitas->adminIndexHead($filterOptions, $massActions);
 			foreach ($infinitasJobs as $infinitasJob) { ?>
 				<tr class="<?php echo $this->Infinitas->rowClass(); ?>">
 					<td><?php echo $this->Infinitas->massActionCheckBox($infinitasJob); ?>&nbsp;</td>
-					<td><?php echo $infinitasJob['InfinitasJob']['queue']; ?>&nbsp;</td>
+					<td>
+						<?php
+							echo $this->Html->link(
+								$infinitasJob['InfinitasJobQueue']['name'],
+								array(
+									'controller' => 'infinitas_job_queues',
+									'action' => 'edit',
+									$infinitasJob['InfinitasJobQueue']['id']
+								)
+							);
+						?>&nbsp;
+					</td>
 					<td><?php echo $infinitasJob['InfinitasJob']['attempts']; ?>&nbsp;</td>
 					<td><?php echo CakeTime::niceShort($infinitasJob['InfinitasJob']['locked']); ?>&nbsp;</td>
 					<td><?php echo CakeTime::niceShort($infinitasJob['InfinitasJob']['failed']); ?>&nbsp;</td>

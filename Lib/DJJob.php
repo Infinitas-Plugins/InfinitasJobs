@@ -139,8 +139,8 @@ class DJWorker extends DJBase {
     public function releaseLocks() {
         $this->runUpdate("
             UPDATE infinitas_jobs
-            SET locked_at = NULL, locked_by = NULL
-            WHERE locked_by = ?",
+            SET locked = NULL, pid = NULL
+            WHERE pid = ?",
             array($this->name)
         );
     }
@@ -158,11 +158,11 @@ class DJWorker extends DJBase {
             SELECT id
             FROM   infinitas_jobs
             WHERE  queue = ?
-            AND    (run_at IS NULL OR NOW() >= run_at)
-            AND    (locked_at IS NULL OR locked_by = ?)
-            AND    failed_at IS NULL
+            AND    (run IS NULL OR NOW() >= run)
+            AND    (locked IS NULL OR pid = ?)
+            AND    failed IS NULL
             AND    attempts < ?
-            ORDER BY created_at DESC
+            ORDER BY created DESC
             LIMIT  10
         ", array($this->queue, $this->name, $this->max_attempts));
 
@@ -299,8 +299,8 @@ class DJJob extends DJBase {
 
         $lock = $this->runUpdate("
             UPDATE infinitas_jobs
-            SET    locked_at = NOW(), locked_by = ?
-            WHERE  id = ? AND (locked_at IS NULL OR locked_by = ?) AND failed_at IS NULL
+            SET    locked = NOW(), pid = ?
+            WHERE  id = ? AND (locked IS NULL OR pid = ?) AND failed IS NULL
         ", array($this->worker_name, $this->job_id, $this->worker_name));
 
         if (!$lock) {
@@ -314,7 +314,7 @@ class DJJob extends DJBase {
     public function releaseLock() {
         $this->runUpdate("
             UPDATE infinitas_jobs
-            SET locked_at = NULL, locked_by = NULL
+            SET locked = NULL, pid = NULL
             WHERE id = ?",
             array($this->job_id)
         );
@@ -332,7 +332,7 @@ class DJJob extends DJBase {
         $this->runUpdate("
             UPDATE infinitas_jobs
             SET attempts = attempts + 1,
-                failed_at = IF(attempts >= ?, NOW(), NULL),
+                failed = IF(attempts >= ?, NOW(), NULL),
                 error = IF(attempts >= ?, ?, NULL)
             WHERE id = ?",
             array(
@@ -349,7 +349,7 @@ class DJJob extends DJBase {
     public function retryLater($delay) {
         $this->runUpdate("
             UPDATE infinitas_jobs
-            SET run_at = DATE_ADD(NOW(), INTERVAL ? SECOND),
+            SET run = DATE_ADD(NOW(), INTERVAL ? SECOND),
                 attempts = attempts + 1
             WHERE id = ?",
             array(
@@ -378,10 +378,10 @@ class DJJob extends DJBase {
         return false;
     }
 
-    public static function enqueue($handler, $queue = "default", $run_at = null) {
+    public static function enqueue($handler, $queue = "default", $run = null) {
         $affected = self::runUpdate(
-            "INSERT INTO infinitas_jobs (id, handler, queue, run_at, created_at) VALUES(?, ?, ?, ?, NOW())",
-            array(String::uuid(), serialize($handler), (string)$queue, $run_at)
+            "INSERT INTO infinitas_jobs (id, handler, queue, run, created) VALUES(?, ?, ?, ?, NOW())",
+            array(String::uuid(), serialize($handler), (string)$queue, $run)
         );
 
         if ($affected < 1) {
@@ -392,16 +392,16 @@ class DJJob extends DJBase {
         return true;
     }
 
-    public static function bulkEnqueue($handlers, $queue = "default", $run_at = null) {
-        $sql = "INSERT INTO infinitas_jobs (id, handler, queue, run_at, created_at) VALUES";
+    public static function bulkEnqueue($handlers, $queue = "default", $run = null) {
+        $sql = "INSERT INTO infinitas_jobs (id, handler, queue, run, created) VALUES";
         $sql .= implode(",", array_fill(0, count($handlers), "(?, ?, ?, ?, NOW())"));
 
         $parameters = array();
         foreach ($handlers as $handler) {
 			$parameters[] = String::uuid();
-            $parameters[]= serialize($handler);
-            $parameters[]= (string) $queue;
-            $parameters[]= $run_at;
+            $parameters[] = serialize($handler);
+            $parameters[] = (string) $queue;
+            $parameters[] = $run;
         }
         $affected = self::runUpdate($sql, $parameters);
 
@@ -418,7 +418,7 @@ class DJJob extends DJBase {
 
     public static function status($queue = "default") {
         $rs = self::runQuery("
-            SELECT COUNT(*) as total, COUNT(failed_at) as failed, COUNT(locked_at) as locked
+            SELECT COUNT(*) as total, COUNT(failed) as failed, COUNT(locked) as locked
             FROM `infinitas_jobs`
             WHERE queue = ?
         ", array($queue));

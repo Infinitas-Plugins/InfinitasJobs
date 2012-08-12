@@ -75,14 +75,7 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 			'className' => 'InfinitasJobs.InfinitasJob',
 			'foreignKey' => 'infinitas_job_queue_id',
 			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
+			'conditions' => ''
 		)
 	);
 

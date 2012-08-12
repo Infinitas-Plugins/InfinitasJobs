@@ -28,7 +28,7 @@ class InfinitasJobsEvents extends AppEvents {
  */
 	public function onAdminMenu(Event $event) {
 		$menu['main'] = array(
-			'Dashboard' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'dashboard'),
+			'Jobs' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'dashboard'),
 		);
 
 		$check = (!empty($event->Handler->request->params['plugin']) && $event->Handler->request->params['plugin'] == 'infinitas_jobs') &&

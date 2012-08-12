@@ -35,8 +35,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @access public
  * @var array
  */
-	public $order = array(
-	);
+	public $order = array();
 
 /**
  * @brief custom finds
@@ -67,12 +66,46 @@ class InfinitasJob extends InfinitasJobsAppModel {
  */
 	public $belongsTo = array(
 		'InfinitasJobQueue' => array(
-			'className' => 'InfinitasJobQueue',
+			'className' => 'InfinitasJobs.InfinitasJobQueue',
 			'foreignKey' => 'infinitas_job_queue_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-			'counterCache' => true,
+			'counterCache' => false,
+		),
+		'InfinitasJobQueuePending' => array(
+			'className' => 'InfinitasJobs.InfinitasJobQueue',
+			'foreignKey' => 'infinitas_job_queue_id',
+			'counterCache' => 'pending_job_count',
+			'counterScope' => array(
+				'InfinitasJob.completed' => null,
+				'InfinitasJob.locked' => null,
+				'InfinitasJob.failed' => null
+			)
+		),
+		'InfinitasJobQueueLocked' => array(
+			'className' => 'InfinitasJobs.InfinitasJobQueue',
+			'foreignKey' => 'infinitas_job_queue_id',
+			'counterCache' => 'locked_job_count',
+			'counterScope' => array(
+				'InfinitasJob.locked IS NOT NULL',
+			)
+		),
+		'InfinitasJobQueueCompleted' => array(
+			'className' => 'InfinitasJobs.InfinitasJobQueue',
+			'foreignKey' => 'infinitas_job_queue_id',
+			'counterCache' => 'completed_job_count',
+			'counterScope' => array(
+				'InfinitasJob.completed IS NOT NULL',
+			)
+		),
+		'InfinitasJobQueueFailed' => array(
+			'className' => 'InfinitasJobs.InfinitasJobQueue',
+			'foreignKey' => 'infinitas_job_queue_id',
+			'counterCache' => 'failed_job_count',
+			'counterScope' => array(
+				'InfinitasJob.failed IS NOT NULL',
+			)
 		)
 	);
 
@@ -84,7 +117,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
  */
 	public $hasMany = array(
 		'InfinitasJobError' => array(
-			'className' => 'InfinitasJobError',
+			'className' => 'InfinitasJobs.InfinitasJobError',
 			'foreignKey' => 'infinitas_job_id',
 			'dependent' => false,
 			'conditions' => '',
@@ -122,6 +155,10 @@ class InfinitasJob extends InfinitasJobsAppModel {
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 
+		$this->order = array(
+			$this->alias . '.created' => 'asc'
+		);
+
 		$this->validate = array(
 			'handler' => array(
 				'notempty' => array(
@@ -133,19 +170,9 @@ class InfinitasJob extends InfinitasJobsAppModel {
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
-			'queue' => array(
-				'notempty' => array(
-					'rule' => array('notempty'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
 			'infinitas_job_queue_id' => array(
-				'uuid' => array(
-					'rule' => array('uuid'),
+				'validateRecordExists' => array(
+					'rule' => array('validateRecordExists'),
 					//'message' => 'Your custom message here',
 					//'allowEmpty' => false,
 					//'required' => false,

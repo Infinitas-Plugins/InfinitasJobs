@@ -45,9 +45,9 @@ class InfinitasJobsController extends InfinitasJobsAppController {
 	public function admin_index() {
 		$this->Paginator->settings = array(
 			'conditions' => array(
-				$this->modelClass . '.locked IS NULL',
-				$this->modelClass . '.failed IS NULL',
-				$this->modelClass . '.run IS NULL',
+				$this->modelClass . '.completed' => null,
+				$this->modelClass . '.locked' => null,
+				$this->modelClass . '.failed' => null
 			)
 		);
 
@@ -78,6 +78,9 @@ class InfinitasJobsController extends InfinitasJobsAppController {
 		$this->Paginator->settings = array(
 			'conditions' => array(
 				$this->modelClass . '.failed IS NOT NULL'
+			),
+			'contain' => array(
+				'InfinitasJobError'
 			)
 		);
 
@@ -110,6 +113,10 @@ class InfinitasJobsController extends InfinitasJobsAppController {
  * @return void
  */
 	protected function _jobsIndex() {
+		if(empty($this->Paginator->settings['contain'])) {
+			$this->Paginator->settings['contain'] = array();
+		}
+		$this->Paginator->settings['contain'][] = 'InfinitasJobQueue';
 		$infinitasJobs = $this->Paginator->paginate(null, $this->Filter->filter);
 
 		$filterOptions = $this->Filter->filterOptions;
