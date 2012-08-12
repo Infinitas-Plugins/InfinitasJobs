@@ -1,8 +1,8 @@
 <?php
 /**
- * InfinitasJob model
+ * InfinitasJobError model
  *
- * @brief Add some documentation for InfinitasJob model.
+ * @brief Add some documentation for InfinitasJobError model.
  *
  * @copyright Copyright (c) 2009 Carl Sutton (dogmatic69)
  *
@@ -17,7 +17,7 @@
  * Redistributions of files must retain the above copyright notice.
  */
 
-class InfinitasJob extends InfinitasJobsAppModel {
+class InfinitasJobError extends InfinitasJobsAppModel {
 /**
  * Additional behaviours that are attached to this model
  *
@@ -54,9 +54,9 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'InfinitasJobQueue' => array(
-			'className' => 'InfinitasJobQueue',
-			'foreignKey' => 'infinitas_job_queue_id',
+		'InfinitasJob' => array(
+			'className' => 'InfinitasJobs.InfinitasJob',
+			'foreignKey' => 'infinitas_job_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
@@ -71,19 +71,6 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @var array
  */
 	public $hasMany = array(
-		'InfinitasJobError' => array(
-			'className' => 'InfinitasJobError',
-			'foreignKey' => 'infinitas_job_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
 	);
 
 /**
@@ -111,7 +98,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->validate = array(
-			'handler' => array(
+			'error' => array(
 				'notempty' => array(
 					'rule' => array('notempty'),
 					//'message' => 'Your custom message here',
@@ -121,29 +108,9 @@ class InfinitasJob extends InfinitasJobsAppModel {
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
-			'queue' => array(
-				'notempty' => array(
-					'rule' => array('notempty'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-			'infinitas_job_queue_id' => array(
+			'infinitas_job_id' => array(
 				'uuid' => array(
 					'rule' => array('uuid'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-			'attempts' => array(
-				'numeric' => array(
-					'rule' => array('numeric'),
 					//'message' => 'Your custom message here',
 					//'allowEmpty' => false,
 					//'required' => false,
