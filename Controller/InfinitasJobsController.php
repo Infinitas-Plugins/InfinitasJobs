@@ -62,7 +62,9 @@ class InfinitasJobsController extends InfinitasJobsAppController {
 	public function admin_locked() {
 		$this->Paginator->settings = array(
 			'conditions' => array(
-				$this->modelClass . '.locked IS NOT NULL'
+				$this->modelClass . '.locked IS NOT NULL',
+				$this->modelClass . '.completed IS NULL',
+				$this->modelClass . '.failed IS NULL',
 			)
 		);
 

@@ -236,7 +236,6 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		}
 
 		if(empty($jobId)) {
-			vaR_dump($message);
 			throw new InvalidArgumentException('Missing job id for logging');
 		}
 
@@ -246,6 +245,10 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			'error' => (bool)$error
 		);
 		parent::log($error, 'job_errors');
+
+		if(php_sapi_name() == 'cli' && Configure::read('debug')) {
+			printf("[%s] %s\n", date('Y-m-d H:i:s'), $message);
+		}
 
 		if(!empty($e)) {
 			throw $e;
@@ -486,6 +489,8 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			$query['conditions'] = array(
 				'InfinitasJobQueue.slug' => $query[0],
 				$this->alias . '.failed' => null,
+				$this->alias . '.completed' => null,
+				$this->alias . '.locked' => null,
 				$this->alias . '.attempts < InfinitasJobQueue.max_attempts',
 				array(
 					'or' => array(
