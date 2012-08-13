@@ -1,5 +1,14 @@
 <?php
 class InfinitasJobsEvents extends AppEvents {
+	public function onConfigureLogging() {
+		CakeLog::config(
+			'job_errors',
+			array(
+				'engine' => 'InfinitasJobs.InfinitasJobLogger',
+				'model' => 'InfinitasJobs.InfinitasJobError'
+			)
+		);
+	}
 /**
  * @brief admin dashboard icon
  *

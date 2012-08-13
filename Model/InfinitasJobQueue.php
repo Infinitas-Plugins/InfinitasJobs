@@ -118,28 +118,91 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 	}
 
 /**
- * General method for the view pages. Gets the required data and relations
- * and can be used for the admin preview also.
+ * @brief fetch the queue id based on the slug passed in
  *
- * @param array $conditions conditions for the find
- * @return array the data that was found
+ * @param string $state
+ * @param array $query
+ * @param array $results
+ *
+ * @return string|boolean
  */
-	public function getViewData($conditions = array()) {
-		if(!$conditions) {
-			return false;
+	protected function _findIdFromSlug($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+			if(empty($query[0])) {
+				throw new InvalidArgumentException('Slug is required to fetch id');
+			}
+
+			$query['fields'] = array(
+				$this->alias . '.' . $this->primaryKey
+			);
+
+			$query['conditions'] = array(
+				$this->alias . '.slug' => $query[0]
+			);
+
+			return $query;
 		}
 
-		$data = $this->find(
-			'first',
-			array(
-				'fields' => array(
-				),
-				'conditions' => $conditions,
-				'contain' => array(
-				)
-			)
-		);
+		if(!empty($results[$this->alias][$this->primaryKey])) {
+			return $results[$this->alias][$this->primaryKey];
+		}
 
-		return $data;
+		return false;
+	}
+
+/**
+ * @brief get the status of the queue
+ *
+ * @param string $state
+ * @param array $query
+ * @param array $results
+ *
+ * @return array
+ *
+ * @throws InvalidArgumentException when there is no queue specified
+ */
+	protected function _findStatus($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+			if(empty($query[0])) {
+				throw new InvalidArgumentException('You must specify the queue');
+			}
+
+			$this->virtualFields['total_job_count'] = String::insert(
+				'SUM(:alias.:pending, :alias.:failed, :alias.:locked, :alias.:completed)',
+				array(
+					'alias' => $this->alias,
+					'pending' => 'pending_job_count',
+					'failed' => 'failed_job_count',
+					'locked' => 'locked_job_count',
+					'completed' => 'completed_job_count'
+				)
+			);
+
+			$query['fields'] = array(
+				$this->alias . '.pending_job_count',
+				$this->alias . '.failed_job_count',
+				$this->alias . '.locked_job_count',
+				$this->alias . '.completed_job_count',
+				'total_job_count'
+			);
+
+			$query['conditions'] = array(
+				$this->alias . '.slug' => $query[0]
+			);
+
+			unset($query[0]);
+
+			return $query;
+		}
+
+        return array(
+            'outstanding' => $results[$this->alias]['pending_job_count'],
+            'locked' => $results[$this->alias]['locked_job_count'],
+            'failed' => $results[$this->alias]['failed_job_count'],
+            'completed' => $results[$this->alias]['completed_job_count'],
+            'total'  => $results[$this->alias]['total_job_count']
+        );
+
+		return $results;
 	}
 }
