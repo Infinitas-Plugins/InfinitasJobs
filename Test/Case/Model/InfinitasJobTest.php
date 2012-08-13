@@ -10,6 +10,7 @@ class TestInfinitasJob extends CakeTestCase {
 	public $fixtures = array(
 		'plugin.infinitas_jobs.infinitas_job',
 		'plugin.infinitas_jobs.infinitas_job_queue',
+		'plugin.infinitas_jobs.infinitas_job_log',
 		/*'plugin.aqua_modules.aqua_module',
 		'plugin.aqua_modules.core_module',
 		'plugin.aqua_modules.core_module_position',
@@ -287,5 +288,104 @@ class TestInfinitasJob extends CakeTestCase {
  */
 	public function testEnqueueFails($data) {
 		$this->InfinitasJob->enqueue('', $data['queue']);
+	}
+
+	public function testFindJob() {
+		$expected = array(
+		'InfinitasJob' => array (
+				'id' => 'job-1a',
+				'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			),
+			'InfinitasJobQueue' => array (
+				'name' => 'Queue1',
+				'slug' => 'queue1',
+				'max_attempts' => '10',
+			)
+		);
+		$result = $this->InfinitasJob->find('job', 'queue1');
+		$this->assertEquals($expected, $result);
+
+		$expected = array(
+		'InfinitasJob' => array (
+				'id' => 'job-2a',
+				'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			),
+			'InfinitasJobQueue' => array (
+				'name' => 'Queue2',
+				'slug' => 'queue2',
+				'max_attempts' => '5',
+			)
+		);
+		$result = $this->InfinitasJob->find('job', 'queue2');
+		$this->assertEquals($expected, $result);
+
+		$expected = array(
+		'InfinitasJob' => array (
+				'id' => 'job-1b',
+				'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			),
+			'InfinitasJobQueue' => array (
+				'name' => 'Queue1',
+				'slug' => 'queue1',
+				'max_attempts' => '10',
+			)
+		);
+		$result = $this->InfinitasJob->find('job', 'queue1');
+		$this->assertEquals($expected, $result);
+
+		$this->assertFalse($this->InfinitasJob->find('job', 'queue1'));
+		$this->assertFalse($this->InfinitasJob->find('job', 'queue2'));
+	}
+
+	public function testFindJobThatFailedBefore() {
+		$this->assertTrue($this->InfinitasJob->delete('job-1b'));
+
+		$expected = array(
+		'InfinitasJob' => array (
+				'id' => 'job-1a',
+				'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			),
+			'InfinitasJobQueue' => array (
+				'name' => 'Queue1',
+				'slug' => 'queue1',
+				'max_attempts' => '10',
+			)
+		);
+
+		for($i = 0; $i < 10; $i++) {
+			$result = $this->InfinitasJob->find('job', 'queue1');
+			$this->assertEquals($expected, $result);
+			$this->assertTrue($this->InfinitasJob->finishJob('job-1a', 'Some error'));
+		}
+
+		$this->assertFalse($this->InfinitasJob->find('job', 'queue1'));
+	}
+
+/**
+ * @brief exception when no queue selected
+ *
+ * @expectedException InvalidArgumentException
+ */
+	public function testFindJobException() {
+		$this->InfinitasJob->find('job');
+	}
+
+/**
+ * @brief exception when no job selected
+ *
+ * @expectedException InvalidArgumentException
+ */
+	public function testFindHandlerException() {
+		$this->InfinitasJob->find('handler');
+	}
+
+/**
+ * @brief test getting a jobs handler
+ */
+	public function testGetHandler() {
+		$result = $this->InfinitasJob->find('handler', 'job-1a');
+		$this->assertTrue($result instanceof CakeJob);
+
+		$this->assertFalse($this->InfinitasJob->find('handler', 'fake'));
 	}
 }

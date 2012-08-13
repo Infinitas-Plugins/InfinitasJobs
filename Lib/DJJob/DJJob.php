@@ -24,7 +24,7 @@ class DJJob extends DJBase {
         try {
             $handler->perform();
 
-            $this->finish();
+			self::model()->finishJob($this->job_id);
             return true;
 
         } catch (DJRetryException $e) {

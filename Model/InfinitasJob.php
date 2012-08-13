@@ -37,6 +37,8 @@ class InfinitasJob extends InfinitasJobsAppModel {
  */
 	public $order = array();
 
+	public $noTrash = false;
+
 /**
  * @brief custom finds
  *
@@ -558,8 +560,8 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			return $query;
 		}
 
-        if(!empty($results[$this->alias]['handler'])) {
-			return unserialize($results[$this->alias]['handler']);
+        if(!empty($results[0][$this->alias]['handler'])) {
+			return unserialize($results[0][$this->alias]['handler']);
 		}
 
 		return false;
