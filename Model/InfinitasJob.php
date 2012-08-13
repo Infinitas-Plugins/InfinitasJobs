@@ -46,7 +46,8 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		'job' => true,
 		'handler' => true,
 		'attempts' => true,
-		'status' => true
+		'status' => true,
+		'max_attempts' => true
 	);
 
 /**
@@ -327,7 +328,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 
 		if($updated) {
 			if(!empty($id)) {
-				return $this->writeLog($id, 'Unlocking the job', false);
+				$this->writeLog($id, 'Unlocking the job', false);
 			}
 
 			return true;
@@ -342,34 +343,42 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @param string $id the id of the job being closed
  */
 	public function finishJob($id, $error = null) {
+		$attempts = $this->find('attempts', $id);
+
 		if($error) {
 			$this->writeLog($id, $error);
 
-			$attempts = $this->find('attempts', $id);
 			$fields = array(
 				$this->alias . '.attempts' => $attempts + 1
 			);
 
 			if($attempts >= $this->find('max_attempts', $id)) {
-				$fields[$this->alias . '.failed'] = date('Y-m-d H:i:s');
+				$fields[$this->alias . '.failed'] = sprintf('"%s"', date('Y-m-d H:i:s'));
 				$this->writeLog($id, sprintf('Stopping trying after %d attempts', $attempts));
 			} else {
 				$fields[$this->alias . '.failed'] = null;
 				$this->writeLog($id, 'Failure in running the job');
 			}
 
-			$this->updateAll(
+			$updated = $this->updateAll(
 				$fields,
 				array(
 					$this->alias . '.' . $this->primaryKey => $id
 				)
 			);
-			return $this->unlock($id);
+
+			if($updated) {
+				return $this->unlock($id);
+			}
+
+			return false;
 		}
 
 		$update = $this->updateAll(
 			array(
-				$this->alias . '.completed' => date('Y-m-d H:i:s')
+				$this->alias . '.completed' => sprintf('"%s"', date('Y-m-d H:i:s')),
+				$this->alias . '.locked' => null,
+				$this->alias . '.attempts' => $attempts + 1
 			),
 			array(
 				$this->alias . '.' . $this->primaryKey => $id
@@ -382,6 +391,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		}
 
 		$this->writeLog($id, 'Failed to complete the job');
+		return false;
 	}
 
 /**
@@ -393,9 +403,10 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @return boolean
  */
 	public function retryJob($id, $delay = 0) {
+		$delay += time();
 		$update = $this->updateAll(
 			array(
-				$this->alias . '.run_at' => date('Y-m-d H:i:s', time() + $delay),
+				$this->alias . '.run_at' => sprintf('"%s"', date('Y-m-d H:i:s', $delay)),
 				$this->alias . '.attempts' => $this->find('attempts', $id) + 1
 			),
 			array(
@@ -415,7 +426,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 /**
  * @brief add a job to the queue
  *
- * @param  $handler
+ * @param CakeJob $handler
  * @param string $queue the name of the queue
  * @param string $runAt the date to run the job
  */
@@ -424,8 +435,14 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			foreach($handler as $data) {
 				self::enqueue($data, $queue, $runAt);
 			}
+			return true;
 		}
 
+		if(!(is_object($handler) || is_callable($handler))) {
+			throw new InvalidArgumentException(sprintf('Job handler is not callable (should be object or closure, found "%s")', gettype($handler)));
+		}
+
+		$this->create();
 		$saved = $this->save(
 			array(
 				'handler' => serialize($handler),
@@ -576,6 +593,36 @@ class InfinitasJob extends InfinitasJobsAppModel {
 
 		if(!empty($results[0][$this->alias]['attempts'])) {
 			return $results[0][$this->alias]['attempts'];
+		}
+
+		return 0;
+	}
+
+	protected function _findMax_attempts($state, $query = array(), $results = array()) {
+		if($state == 'before') {
+			$query['fields'] = array(
+				'InfinitasJobQueue.max_attempts'
+			);
+
+			$query['conditions'] = array(
+				$this->alias . '.' . $this->primaryKey => $query[0]
+			);
+
+			$query['joins'][] = array(
+				'table' => 'infinitas_job_queues',
+				'alias' => 'InfinitasJobQueue',
+				'type' => 'left',
+				'foreignKey' => false,
+				'conditions' => array(
+					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueue.id',
+				)
+			);
+
+			return $query;
+		}
+
+		if(!empty($results[0]['InfinitasJobQueue']['max_attempts'])) {
+			return $results[0]['InfinitasJobQueue']['max_attempts'];
 		}
 
 		return 0;

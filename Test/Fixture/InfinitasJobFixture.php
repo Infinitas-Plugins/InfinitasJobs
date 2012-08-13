@@ -1,20 +1,19 @@
 <?php
 	class InfinitasJobFixture extends CakeTestFixture {
 		public $name = 'InfinitasJob';
-		
-			public $fields = array(
+
+	public $fields = array(
 		'id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 36, 'key' => 'primary', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'handler' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'queue' => array('type' => 'string', 'null' => false, 'default' => 'default', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'infinitas_job_queue_id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 36, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'infinitas_job_error_count' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 3),
+		'host' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 150, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'pid' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'handler' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'attempts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 5),
-		'run' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'run_at' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'completed' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'locked' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'locked_by' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'failed' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'error' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'infinitas_job_error_count' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 3),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
@@ -22,23 +21,60 @@
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
-	
-			public $records = array(
-		array(
-			'id' => '5026f2c2-2870-4569-a864-74086318cd70',
-			'handler' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-			'queue' => 'Lorem ipsum dolor sit amet',
-			'infinitas_job_queue_id' => 'Lorem ipsum dolor sit amet',
-			'infinitas_job_error_count' => 1,
-			'attempts' => 1,
-			'run' => '2012-08-12 01:03:14',
-			'completed' => '2012-08-12 01:03:14',
-			'locked' => '2012-08-12 01:03:14',
-			'locked_by' => 'Lorem ipsum dolor sit amet',
-			'failed' => '2012-08-12 01:03:14',
-			'error' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-			'created' => '2012-08-12 01:03:14',
-			'modified' => '2012-08-12 01:03:14'
-		),
-	);
-		}
+
+	public $records = array();
+
+	public function __construct() {
+		App::uses('InfinitasJobs_TestJob', 'InfinitasJobs.Lib/Job');
+
+		$this->records = array(
+			array(
+				'id' => 'job-1a',
+				'infinitas_job_queue_id' => 'queue-1',
+				'host' => null,
+				'pid' => null,
+				'handler' => serialize(new InfinitasJobs_TestJob()),
+				'attempts' => '0',
+				'run_at' => '2012-08-13 11:57:22',
+				'completed' => null,
+				'locked' => null,
+				'failed' => null,
+				'infinitas_job_error_count' => '0',
+				'created' => '2012-08-13 11:57:22',
+				'modified' => '2012-08-13 11:57:22'
+			),
+			array(
+				'id' => 'job-1b',
+				'infinitas_job_queue_id' => 'queue-1',
+				'host' => null,
+				'pid' => null,
+				'handler' => serialize(new InfinitasJobs_TestJob()),
+				'attempts' => '0',
+				'run_at' => '2012-08-13 11:57:22',
+				'completed' => null,
+				'locked' => null,
+				'failed' => null,
+				'infinitas_job_error_count' => '0',
+				'created' => '2012-08-13 11:57:22',
+				'modified' => '2012-08-13 11:57:22'
+			),
+			array(
+				'id' => 'job-2a',
+				'infinitas_job_queue_id' => 'queue-2',
+				'host' => null,
+				'pid' => null,
+				'handler' => serialize(new InfinitasJobs_TestJob()),
+				'attempts' => '0',
+				'run_at' => '2012-08-13 12:22:50',
+				'completed' => null,
+				'locked' => null,
+				'failed' => null,
+				'infinitas_job_error_count' => '0',
+				'created' => '2012-08-13 12:22:50',
+				'modified' => '2012-08-13 12:22:50'
+			)
+		);
+
+		parent::__construct();
+	}
+}

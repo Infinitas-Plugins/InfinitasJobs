@@ -1,53 +1,291 @@
 <?php
-	App::import('lib', 'libs.test/AppModelTest');
-	
-	class TestInfinitasJob extends AppModelTestCase {
+App::uses('InfintasJob', 'InfintasJobs.Model');
 
-		/**
-		 * @brief Configuration for the test case
-		 *
-		 * Loading fixtures:
-		 * 
-		 * List all the needed fixtures in the do part of the fixture array.
-		 * In replace you can overwrite fixtures of other plugins by your own.
-		 *
-		 * 'fixtures' => array(
-		 *		'do' => array(
-		 *			'SomePlugin.SomeModel
-		 *		),
-		 *		'replace' => array(
-		 *			'Core.User' => 'SomePlugin.User
-		 *		)
-		 * )
-		 * @var array 
-		 */
-		public $setup = array(
-			'model' => 'InfinitasJobs.InfinitasJob',
-			'fixtures' => array(
-				'do' => array(
-					'InfinitasJob.InfinitasJob',
-					'InfinitasJob.InfinitasJobQueue',
-					'InfinitasJob.InfinitasJobError'
+class TestInfinitasJob extends CakeTestCase {
+/**
+ * Fixtures
+ *
+ * @var array
+ */
+	public $fixtures = array(
+		'plugin.infinitas_jobs.infinitas_job',
+		'plugin.infinitas_jobs.infinitas_job_queue',
+		/*'plugin.aqua_modules.aqua_module',
+		'plugin.aqua_modules.core_module',
+		'plugin.aqua_modules.core_module_position',
+		'plugin.aqua_modules.aqua_modules_core_user',
+		'plugin.aqua_companies.aqua_company',
+		'plugin.aqua_companies.aqua_companies_core_user',
+		'plugin.aqua_companies.aqua_user',
+
+		'plugin.users.group',
+		'plugin.themes.theme',
+		'plugin.modules.modules_route',
+		'plugin.routes.route',
+		'plugin.locks.global_lock',
+		'plugin.management.ticket'*/
+	);
+
+/**
+ * setUp method
+ *
+ * @return void
+ */
+	public function setUp() {
+		parent::setUp();
+		$this->InfinitasJob = ClassRegistry::init('InfinitasJobs.InfinitasJob');
+	}
+
+/**
+ * tearDown method
+ *
+ * @return void
+ */
+	public function tearDown() {
+		unset($this->InfinitasJob);
+
+		parent::tearDown();
+	}
+
+/**
+ * @brief Tests Validation
+ *
+ * @test Enter description here
+ */
+	public function testValidation() {
+
+	}
+
+/**
+ * @brief test host name
+ */
+	public function testHostname() {
+		$result = $this->InfinitasJob->hostname();
+		$this->assertTrue(!empty($result));
+	}
+
+/**
+ * @brief test the pid is valid
+ */
+	public function testPid() {
+		$result = $this->InfinitasJob->pid();
+		$this->assertTrue(is_int($result));
+		$this->assertTrue($result > 0);
+	}
+
+/**
+ * @brief test for locking with invalid job
+ *
+ * @expectedException InvalidArgumentException
+ */
+	public function testLockJobInvalid() {
+		$this->InfinitasJob->lockJob('fake-id');
+	}
+
+/**
+ * @brief test locking jobs
+ */
+	public function testLockJob() {
+		$result = $this->InfinitasJob->lockJob('job-1a');
+		$this->assertTrue($result);
+
+		$result = $this->InfinitasJob->lockJob('job-2a');
+		$this->assertTrue($result);
+
+		$fields = array(
+			'InfinitasJob.id',
+			'InfinitasJob.locked',
+			'InfinitasJob.pid'
+		);
+		$expected = array(
+			array(
+				'InfinitasJob' => array(
+					'id' => 'job-1a',
+					'locked' => true,
+					'pid' => $this->InfinitasJob->pid()
+				)
+			),
+			array(
+				'InfinitasJob' => array(
+					'id' => 'job-1b',
+					'locked' => null,
+					'pid' => null
+				)
+			),
+			array(
+				'InfinitasJob' => array(
+					'id' => 'job-2a',
+					'locked' => true,
+					'pid' => $this->InfinitasJob->pid()
 				)
 			)
 		);
-		
-		/**
-		 * @brief Contains a list of test methods to run
-		 *
-		 * If it is set to false all the methods will run. Otherwise pass in an array
-		 * with a list of tests to run.
-		 *
-		 * @var mixed 
-		 */
-		public $tests = false;
-
-		/**
-		 * @brief Tests Validation
-		 *
-		 * @test Enter description here
-		 */
-		public function testValidation() {
-			
+		$result = $this->InfinitasJob->find('all', array('fields' => $fields));
+		foreach($result as $k => $v) {
+			$this->assertEquals($expected[$k]['InfinitasJob']['id'], $v['InfinitasJob']['id']);
+			$this->assertEquals($expected[$k]['InfinitasJob']['locked'], (bool)$v['InfinitasJob']['locked']);
+			$this->assertEquals($expected[$k]['InfinitasJob']['pid'], $v['InfinitasJob']['pid']);
 		}
 	}
+
+/**
+ * @brief test locking a job that has failed
+ *
+ * @expectedException CakeException
+ */
+	public function testLockFailedJob() {
+		for($i = 0; $i < 6; $i++) {
+			$this->InfinitasJob->lockJob('job-2a');
+		}
+	}
+
+/**
+ * @brief test unlocking by the job id
+ */
+	public function testUnlockJobById() {
+		$result = $this->InfinitasJob->lockJob('job-1a');
+		$this->assertTrue($result);
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertTrue((bool)$result['InfinitasJob']['locked']);
+
+		$this->assertTrue($this->InfinitasJob->unlock('job-1a'));
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertFalse((bool)$result['InfinitasJob']['locked']);
+	}
+
+/**
+ * @brief test unlocking by the pid
+ */
+	public function testUnlockJobByPid() {
+		$result = $this->InfinitasJob->lockJob('job-1a');
+		$this->assertTrue($result);
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertTrue((bool)$result['InfinitasJob']['locked']);
+
+		$this->assertTrue($this->InfinitasJob->unlock());
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertFalse((bool)$result['InfinitasJob']['locked']);
+	}
+
+/**
+ * @brief test finishing a job off
+ */
+	public function testFinishJob() {
+		$result = $this->InfinitasJob->lockJob('job-1a');
+		$this->assertTrue($result);
+
+		$this->assertTrue($this->InfinitasJob->finishJob('job-1a'));
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertTrue((bool)$result['InfinitasJob']['completed']);
+		$this->assertFalse((bool)$result['InfinitasJob']['locked']);
+		$this->assertEquals(1, $result['InfinitasJob']['attempts']);
+	}
+
+/**
+ * @brief test finishing a job when there is an error
+ */
+	public function testFinishJobWithError() {
+		$result = $this->InfinitasJob->lockJob('job-1a');
+		$this->assertTrue($result);
+
+		$this->assertTrue($this->InfinitasJob->finishJob('job-1a', 'Job failed'));
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+		$this->assertFalse((bool)$result['InfinitasJob']['completed']);
+		$this->assertFalse((bool)$result['InfinitasJob']['locked']);
+		$this->assertEquals(1, $result['InfinitasJob']['attempts']);
+
+		for($i = 0; $i < 10; $i++) {
+			$this->assertTrue($this->InfinitasJob->lockJob('job-1a'));
+			$this->assertTrue($this->InfinitasJob->finishJob('job-1a', 'Job failed'));
+		}
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read();
+
+		$this->assertEquals(11, $result['InfinitasJob']['attempts']);
+		$this->assertTrue((bool)$result['InfinitasJob']['failed']);
+		$this->assertFalse((bool)$result['InfinitasJob']['completed']);
+	}
+
+	public function testRetryJob() {
+		$fields = array('id', 'attempts', 'run_at');
+		$this->assertTrue($this->InfinitasJob->lockJob('job-1a'));
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read($fields);
+		$expected = array(
+			'id' => 'job-1a',
+			'attempts' => 0,
+			'run_at' => '2012-08-13 11:57:22'
+		);
+		$this->assertEquals($expected, $result['InfinitasJob']);
+
+		$this->assertTrue($this->InfinitasJob->retryJob('job-1a', 7200));
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read($fields);
+		$expected = array(
+			'id' => 'job-1a',
+			'attempts' => '1',
+			'run_at' => '2012-08-13 11:57:22'
+		);
+		$this->assertEquals($expected['attempts'], $result['InfinitasJob']['attempts']);
+		$this->assertTrue($result['InfinitasJob']['run_at'] > date('Y-m-d H:i:s', time() + 7195));
+
+		$this->assertTrue($this->InfinitasJob->retryJob('job-1a', 5000));
+
+		$this->InfinitasJob->id = 'job-1a';
+		$result = $this->InfinitasJob->read($fields);
+		$expected = array(
+			'id' => 'job-1a',
+			'attempts' => '2',
+			'run_at' => '2012-08-13 11:57:22'
+		);
+		$this->assertEquals($expected['attempts'], $result['InfinitasJob']['attempts']);
+		$this->assertTrue($result['InfinitasJob']['run_at'] > date('Y-m-d H:i:s', time() + 4995));
+	}
+
+/**
+ * @brief test enqueue
+ */
+	public function testEnqueue() {
+		$this->assertTrue($this->InfinitasJob->enqueue(new InfinitasJobs_TestJob(), 'queue1'));
+		$this->assertEquals(3, $this->InfinitasJob->find('count', array('conditions' => array('infinitas_job_queue_id' => 'queue-1'))));
+
+		$this->assertTrue($this->InfinitasJob->enqueue(new InfinitasJobs_TestJob(), 'queue1'));
+		$this->assertEquals(4, $this->InfinitasJob->find('count', array('conditions' => array('infinitas_job_queue_id' => 'queue-1'))));
+
+		$jobs = array(
+			new InfinitasJobs_TestJob(),
+			new InfinitasJobs_TestJob(),
+			new InfinitasJobs_TestJob(),
+			new InfinitasJobs_TestJob(),
+			new InfinitasJobs_TestJob(),
+			new InfinitasJobs_TestJob()
+		);
+		$this->assertTrue($this->InfinitasJob->enqueue($jobs, 'queue1'));
+		$this->assertEquals(10, $this->InfinitasJob->find('count', array('conditions' => array('infinitas_job_queue_id' => 'queue-1'))));
+
+		$this->assertTrue($this->InfinitasJob->enqueue(new InfinitasJobs_TestJob(), 'queue2'));
+		$this->assertEquals(2, $this->InfinitasJob->find('count', array('conditions' => array('infinitas_job_queue_id' => 'queue-2'))));
+	}
+
+/**
+ * @brief test enqueue incorrectly
+ *
+ * @expectedException PHPUnit_Framework_Error_Warning
+ */
+	public function testEnqueueFails($data) {
+		$this->InfinitasJob->enqueue('', $data['queue']);
+	}
+}
