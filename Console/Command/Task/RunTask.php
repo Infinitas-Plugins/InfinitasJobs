@@ -49,7 +49,6 @@ class RunTask extends AppShell {
  * @return void
  */
 	public function execute() {
-		Configure::write('debug', $this->params['debug']);
 		if (empty($this->params['queue'])) {
 			$this->cakeError('error', array(array(
 				'code' => '', 'name' => '',
@@ -58,10 +57,10 @@ class RunTask extends AppShell {
 		}
 
 		$worker = new DJWorker(array(
-			"queue" => $this->params['queue'],
-			"count" => $this->params['count'],
-			"sleep" => $this->params['sleep'],
-			"max_attempts" => $this->params['max'],
+			'queue' => $this->params['queue'],
+			'count' => $this->params['count'],
+			'sleep' => $this->params['sleep'],
+			'max_attempts' => $this->params['max'],
 		));
 
 		$debug = 4 - (Configure::read('debug') * 2);
@@ -69,5 +68,4 @@ class RunTask extends AppShell {
 		//$worker->setLogLevel($debug);
 		$worker->start();
 	}
-
 }

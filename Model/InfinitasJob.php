@@ -116,11 +116,28 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @var array
  */
 	public $hasMany = array(
-		'InfinitasJobError' => array(
-			'className' => 'InfinitasJobs.InfinitasJobError',
+		'InfinitasJobLog' => array(
+			'className' => 'InfinitasJobs.InfinitasJobLog',
 			'foreignKey' => 'infinitas_job_id',
 			'dependent' => false,
-			'conditions' => '',
+			'conditions' => array(
+				'InfinitasJobLog.error' => false
+			),
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
+		'InfinitasJobError' => array(
+			'className' => 'InfinitasJobs.InfinitasJobLog',
+			'foreignKey' => 'infinitas_job_id',
+			'dependent' => false,
+			'conditions' => array(
+				'InfinitasJobError.error' => true
+			),
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
@@ -163,33 +180,15 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			'handler' => array(
 				'notempty' => array(
 					'rule' => array('notempty'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					'message' => __d('infinitas_jobs', 'The handler was not submitted'),
 				),
 			),
 			'infinitas_job_queue_id' => array(
 				'validateRecordExists' => array(
 					'rule' => array('validateRecordExists'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					'message' => __d('infinitas_jobs', 'The selected queue does not exist'),
 				),
-			),
-			'attempts' => array(
-				'numeric' => array(
-					'rule' => array('numeric'),
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
+			)
 		);
 	}
 
@@ -234,7 +233,8 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		}
 
 		if(empty($jobId)) {
-			throw new InvalidArgumentException('Missing job id for loggin');
+			vaR_dump($message);
+			throw new InvalidArgumentException('Missing job id for logging');
 		}
 
 		$error = array(
@@ -242,7 +242,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			'message' => $message,
 			'error' => (bool)$error
 		);
-		CakeLog::write('job_errors', $error);
+		parent::log($error, 'job_errors');
 
 		if(!empty($e)) {
 			throw $e;
@@ -255,9 +255,13 @@ class InfinitasJob extends InfinitasJobsAppModel {
  * @param string $id the id of the job to lock
  */
 	public function lockJob($id) {
+		if(empty($id) || !$this->exists($id)) {
+			throw new InvalidArgumentException(sprintf('Selected job does not exist "%s"', $id));
+		}
+
 		$this->updateAll(
 			array(
-				$this->alias . '.locked' => date('Y-m-d H:i:s'),
+				$this->alias . '.locked' => sprintf('"%s"', date('Y-m-d H:i:s')),
 				$this->alias . '.pid' => $this->pid()
 			),
 			array(
@@ -276,8 +280,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			return true;
 		}
 
-		$this->writeLog($id, 'Failed to acquire lock');
-		return false;
+		throw new CakeException('Failed to lock the job');
 	}
 
 /**
@@ -323,10 +326,13 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		}
 
 		if($updated) {
-			return $this->writeLog($id, 'Unlocking the job', false);
+			if(!empty($id)) {
+				return $this->writeLog($id, 'Unlocking the job', false);
+			}
+
+			return true;
 		}
 
-		$this->writeLog($id, 'Failed to unlock the job');
 		return false;
 	}
 
@@ -407,16 +413,16 @@ class InfinitasJob extends InfinitasJobsAppModel {
 	}
 
 /**
- * enque
+ * @brief add a job to the queue
  *
- * @param type $handler
- * @param type $queue
- * @param type $run_at
+ * @param  $handler
+ * @param string $queue the name of the queue
+ * @param string $runAt the date to run the job
  */
-	public function enque($handler, $queue = 'default', $runAt = null) {
+	public function enqueue($handler, $queue = 'default', $runAt = null) {
 		if(is_array($handler)) {
 			foreach($handler as $data) {
-				self::enque($data, $queue, $run_at);
+				self::enqueue($data, $queue, $runAt);
 			}
 		}
 
@@ -424,7 +430,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			array(
 				'handler' => serialize($handler),
 				'infinitas_job_queue_id' => $this->InfinitasJobQueue->find('idFromSlug', $queue),
-				'run_at' => $run_at == null ? date('Y-m-d H:i:s') : $runAt
+				'run_at' => $runAt == null ? date('Y-m-d H:i:s') : $runAt
 			)
 		);
 
@@ -451,7 +457,11 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			}
 
 			$query['fields'] = array(
-				$this->alias . '.id'
+				$this->alias . '.id',
+				$this->alias . '.handler',
+				'InfinitasJobQueue.name',
+				'InfinitasJobQueue.slug',
+				'InfinitasJobQueue.max_attempts',
 			);
 
 			$query['conditions'] = array(
@@ -461,19 +471,29 @@ class InfinitasJob extends InfinitasJobsAppModel {
 				array(
 					'or' => array(
 						$this->alias . '.run_at' => null,
-						$this->alias . '.run_at >= ' => date('Y-m-d H:i:s')
+						$this->alias . '.run_at < ' => date('Y-m-d H:i:s')
 					)
 				),
 				array(
 					'or' => array(
 						$this->alias . '.pid' => null,
-						$this->alias . '.pid = ' => $this->pid()
+						$this->alias . '.pid ' => $this->pid()
 					)
 				)
 			);
 
+			$query['joins'][] = array(
+				'table' => 'infinitas_job_queues',
+				'alias' => 'InfinitasJobQueue',
+				'type' => 'left',
+				'foreignKey' => false,
+				'conditions' => array(
+					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueue.id',
+				)
+			);
+
 			$query['order'] = array(
-				$this->alias . '.created' => 'desc'
+				$this->alias . '.run_at' => 'desc'
 			);
 
 			$query['limit'] = 10;
@@ -483,10 +503,13 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			return $query;
 		}
 
-		foreach($results as $k => $v) {
-			if($this->lockJob($v[$this->alias][$this->primaryKey])) {
-				$this->writeLog($id, 'Job started', false);
-				return $v[$this->alias][$this->primaryKey];
+		foreach($results as $k => $job) {
+			try {
+				$this->lockJob($job[$this->alias][$this->primaryKey]);
+				$this->writeLog($job[$this->alias][$this->primaryKey], 'Job started', false);
+				return $job;
+			} catch(Exception $e) {
+				$this->writeLog($job[$this->alias][$this->primaryKey], $e->getMessage());
 			}
 		}
 

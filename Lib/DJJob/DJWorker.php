@@ -1,37 +1,5 @@
 <?php
-/**
- * This system is mostly a port of delayed_job
- *
- * @link http://github.com/tobi/delayed_job
- */
-
-class DJBase {
-    const CRITICAL = 4;
-
-    const ERROR = 3;
-
-    const WARN = 2;
-
-    const INFO = 1;
-
-    const DEBUG = 0;
-
-    private static $log_level = self::DEBUG;
-
-	public static function model() {
-		return ClassRegistry::init('InfinitasJobs.InfinitasJob');
-	}
-
-    public static function setLogLevel($const) {
-        self::$log_level = $const;
-    }
-
-    protected static function log($mesg, $severity=self::CRITICAL) {
-        if ($severity >= self::$log_level) {
-            printf("[%s] %s\n", date('Y-m-d H:i:s'), $mesg);
-        }
-    }
-}
+App::uses('DJBase', 'InfinitasJobs.Lib/DJJob');
 
 /**
  * This is a singleton-ish thing. It wouldn't really make sense to
@@ -103,13 +71,20 @@ class DJWorker extends DJBase {
                 $count += 1;
                 $job = self::model()->find('job', $this->queue);
 
-                if (!$job) {
+                if (empty($job)) {
                     $this->log("[JOB] Failed to get a job, queue::{$this->queue} may be empty", self::DEBUG);
                     sleep($this->sleep);
                     continue;
                 }
 
                 $job_count += 1;
+				$job = new DJJob(
+					$job['InfinitasJobQueue']['slug'],
+					$job['InfinitasJob']['id'],
+					array(
+						'max_attempts' => $job['InfinitasJobQueue']['max_attempts']
+					)
+				);
                 $job->run();
             }
         } catch (Exception $e) {
@@ -146,47 +121,4 @@ class DJWorker extends DJBase {
 		$File = new File($this->pidFile, true);
 		$File->write($this->pid);
 	}
-}
-
-class DJJob extends DJBase {
-
-    public function __construct($worker_name, $job_id, $options = array()) {
-        $options = array_merge(
-			array('max_attempts' => 5),
-			$options
-		);
-
-        $this->worker_name = $worker_name;
-        $this->job_id = $job_id;
-        $this->max_attempts = $options["max_attempts"];
-    }
-
-    public function run() {
-        $handler = self::model()->find('handler', $this->job_id);
-        if (!is_object($handler)) {
-			self::model()->finishJob($this->job_id, 'Error running job handler');
-            return false;
-        }
-
-        try {
-            $handler->perform();
-
-            $this->finish();
-            return true;
-
-        } catch (DJRetryException $e) {
-            $attempts = self::model()->find('attempts', $this->job_id) + 1;
-
-            if($attempts == $this->max_attempts) {
-				self::model()->finishJob($this->job_id, $e->getMessage());
-            } else {
-                self::model()->retryJob($e->getDelay());
-            }
-            return false;
-
-        } catch (Exception $e) {
-            self::model()->finishJob($this->job_id, $e->getMessage());
-            return false;
-        }
-    }
 }

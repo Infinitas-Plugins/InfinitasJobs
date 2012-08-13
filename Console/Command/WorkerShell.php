@@ -2,7 +2,9 @@
 App::uses('AppShell', 'Console/Command');
 App::uses('ConnectionManager', 'Model');
 App::uses('CakeJob', 'InfinitasJobs.Job');
-App::uses('DJJob', 'InfinitasJobs.Lib');
+
+App::uses('DJJob', 'InfinitasJobs.Lib/DJJob');
+App::uses('DJWorker', 'InfinitasJobs.Lib/DJJob');
 
 /**
  * Convenience method to unserialize InfinitasJobs classes properly
@@ -28,41 +30,11 @@ function unserialize_jobs($className) {
  */
 class WorkerShell extends AppShell {
 
-	public $tasks = array('InfinitasJobs.Cleanup', 'InfinitasJobs.Run', 'InfinitasJobs.Status');
-
-/**
- * Override startup
- *
- * @access public
- */
-	public function startup() {
-		parent::startup();
-		ini_set('unserialize_callback_func', 'unserialize_jobs');
-		$connection = ConnectionManager::getDataSource($this->params['connection']);
-
-		if ($this->params['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->params['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
-		} else {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->params['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-					"user={$connection->config['login']}",
-					"password={$connection->config['password']}"
-				))
-			);
-		}
-	}
+	public $tasks = array(
+		'InfinitasJobs.Cleanup',
+		'InfinitasJobs.Run',
+		'InfinitasJobs.Status'
+	);
 
 /**
  * Override main() for help message hook

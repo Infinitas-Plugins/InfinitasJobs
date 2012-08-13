@@ -33,41 +33,6 @@ class InfinitasJobsComponent extends Component {
 	}
 
 /**
- * Called before the Controller::beforeFilter().
- *
- * @param object  A reference to the controller
- * @return void
- * @access public
- * @link http://book.cakephp.org/view/65/MVC-Class-Access-Within-Components
- */
-	public function initialize(&$Controller) {
-		$connection = ConnectionManager::getDataSource($this->settings['connection']);
-
-		if ($this->settings['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
-		} else {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-					"user={$connection->config['login']}",
-					"password={$connection->config['password']}"
-				))
-			);
-		}
-	}
-
-/**
  * Returns a job
  *
  * Auto imports and passes through the constructor parameters to newly created job
@@ -112,25 +77,15 @@ class InfinitasJobsComponent extends Component {
  * Note that all Jobs enqueued using this system must extend the base CakeJob
  * class which is included in this plugin
  *
+ * $job can be a single job or an array of jobs that will use the same queue and $runAt date
+ *
  * @param Job $job
  * @param string $queue
  * @param string $run_at
  * @return boolean True if enqueue is successful, false on failure
  */
-	public function enqueue($job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
-	}
-
-/**
- * Bulk Enqueues Jobs using DJJob
- *
- * @param array $jobs
- * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
- */
-	public function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	public function enqueue($job, $queue = 'default', $runAt = null) {
+		return ClassRegistry::init('InfinitasJobs.InfinitasJob')->enqueue($job, $queue, $runAt);
 	}
 
 /**
@@ -142,5 +97,4 @@ class InfinitasJobsComponent extends Component {
 	public function status($queue = "default") {
 		return DJJob::status($queue);
 	}
-
 }

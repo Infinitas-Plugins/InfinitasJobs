@@ -116,6 +116,7 @@ class InfinitasJobsController extends InfinitasJobsAppController {
 		if(empty($this->Paginator->settings['contain'])) {
 			$this->Paginator->settings['contain'] = array();
 		}
+		$this->Paginator->settings['contain'][] = 'InfinitasJobLog';
 		$this->Paginator->settings['contain'][] = 'InfinitasJobQueue';
 		$infinitasJobs = $this->Paginator->paginate(null, $this->Filter->filter);
 

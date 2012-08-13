@@ -40,30 +40,6 @@ class InfinitasJobsBehavior extends ModelBehavior {
  */
 	public function setup(&$Model, $config = array()) {
 		$this->settings = array_merge($this->settings, $config);
-		$connection = ConnectionManager::getDataSource($this->settings['connection']);
-
-		if ($this->settings['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
-		} else {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-					"user={$connection->config['login']}",
-					"password={$connection->config['password']}"
-				))
-			);
-		}
 	}
 
 /**
@@ -114,25 +90,15 @@ class InfinitasJobsBehavior extends ModelBehavior {
  * Note that all Jobs enqueued using this system must extend the base CakeJob
  * class which is included in this plugin
  *
+ * $job can be a single job or an array of jobs that will use the same queue and $runAt date
+ *
  * @param Job $job
  * @param string $queue
  * @param string $run_at
  * @return boolean True if enqueue is successful, false on failure
  */
-	public function enqueue(&$Model, $job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
-	}
-
-/**
- * Bulk Enqueues Jobs using DJJob
- *
- * @param array $jobs
- * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
- */
-	public function bulkEnqueue(&$Model, $jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	public function enqueue(&$Model, $job, $queue = 'default', $runAt = null) {
+		return ClassRegistry::init('InfinitasJobs.InfinitasJob')->enqueue($job, $queue, $runAt);
 	}
 
 /**
@@ -144,5 +110,4 @@ class InfinitasJobsBehavior extends ModelBehavior {
 	public function status(&$Model, $queue = "default") {
 		return DJJob::status($queue);
 	}
-
 }

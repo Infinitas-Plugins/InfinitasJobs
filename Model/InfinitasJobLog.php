@@ -17,7 +17,7 @@
  * Redistributions of files must retain the above copyright notice.
  */
 
-class InfinitasJobError extends InfinitasJobsAppModel {
+class InfinitasJobLog extends InfinitasJobsAppModel {
 /**
  * Additional behaviours that are attached to this model
  *

@@ -88,6 +88,10 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 	public $hasAndBelongsToMany = array(
 	);
 
+	public $findMethods = array(
+		'idFromSlug' => true
+	);
+
 /**
  * overload the construct method so that you can use translated validation
  * messages.
@@ -143,8 +147,8 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 			return $query;
 		}
 
-		if(!empty($results[$this->alias][$this->primaryKey])) {
-			return $results[$this->alias][$this->primaryKey];
+		if(!empty($results[0][$this->alias][$this->primaryKey])) {
+			return $results[0][$this->alias][$this->primaryKey];
 		}
 
 		return false;
