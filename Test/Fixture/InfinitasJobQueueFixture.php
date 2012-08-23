@@ -1,4 +1,10 @@
 <?php
+/**
+ * @brief fixture file for InfinitasJobQueue tests.
+ *
+ * @package InfinitasJobs.Fixture
+ * @since 0.9b1
+ */
 class InfinitasJobQueueFixture extends CakeTestFixture {
 	public $name = 'InfinitasJobQueue';
 
@@ -15,6 +21,7 @@ class InfinitasJobQueueFixture extends CakeTestFixture {
 		'pid' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 5),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'retry_delay' => array('type' => 'integer', 'null' => false, 'default' => '7200', 'length' => 8),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'name' => array('column' => 'name', 'unique' => 1)
@@ -35,7 +42,8 @@ class InfinitasJobQueueFixture extends CakeTestFixture {
 			'completed_job_count' => 0,
 			'pid' => null,
 			'created' => '2012-08-13 13:43:56',
-			'modified' => '2012-08-13 13:43:56'
+			'modified' => '2012-08-13 13:43:56',
+			'retry_delay' => null
 		),
 		array(
 			'id' => 'queue-2',
@@ -49,7 +57,8 @@ class InfinitasJobQueueFixture extends CakeTestFixture {
 			'completed_job_count' => 0,
 			'pid' => null,
 			'created' => '2012-08-13 13:43:56',
-			'modified' => '2012-08-13 13:43:56'
-		)
+			'modified' => '2012-08-13 13:43:56',
+			'retry_delay' => null
+		),
 	);
 }

@@ -1,6 +1,12 @@
 <?php
-	class InfinitasJobFixture extends CakeTestFixture {
-		public $name = 'InfinitasJob';
+/**
+ * @brief fixture file for InfinitasJob tests.
+ *
+ * @package InfinitasJobs.Fixture
+ * @since 0.9b1
+ */
+class InfinitasJobFixture extends CakeTestFixture {
+	public $name = 'InfinitasJob';
 
 	public $fields = array(
 		'id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 36, 'key' => 'primary', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
@@ -22,59 +28,6 @@
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
-	public $records = array();
-
-	public function __construct() {
-		App::uses('InfinitasJobs_TestJob', 'InfinitasJobs.Lib/Job');
-
-		$this->records = array(
-			array(
-				'id' => 'job-1a',
-				'infinitas_job_queue_id' => 'queue-1',
-				'host' => null,
-				'pid' => null,
-				'handler' => serialize(new InfinitasJobs_TestJob()),
-				'attempts' => '0',
-				'run_at' => '2012-08-13 11:57:22',
-				'completed' => null,
-				'locked' => null,
-				'failed' => null,
-				'infinitas_job_error_count' => '0',
-				'created' => '2012-08-13 11:57:22',
-				'modified' => '2012-08-13 11:57:22'
-			),
-			array(
-				'id' => 'job-1b',
-				'infinitas_job_queue_id' => 'queue-1',
-				'host' => null,
-				'pid' => null,
-				'handler' => serialize(new InfinitasJobs_TestJob()),
-				'attempts' => '0',
-				'run_at' => '2012-08-13 11:57:22',
-				'completed' => null,
-				'locked' => null,
-				'failed' => null,
-				'infinitas_job_error_count' => '0',
-				'created' => '2012-08-13 11:57:22',
-				'modified' => '2012-08-13 11:57:22'
-			),
-			array(
-				'id' => 'job-2a',
-				'infinitas_job_queue_id' => 'queue-2',
-				'host' => null,
-				'pid' => null,
-				'handler' => serialize(new InfinitasJobs_TestJob()),
-				'attempts' => '0',
-				'run_at' => '2012-08-13 12:22:50',
-				'completed' => null,
-				'locked' => null,
-				'failed' => null,
-				'infinitas_job_error_count' => '0',
-				'created' => '2012-08-13 12:22:50',
-				'modified' => '2012-08-13 12:22:50'
-			)
-		);
-
-		parent::__construct();
-	}
+	public $records = array(
+	);
 }
