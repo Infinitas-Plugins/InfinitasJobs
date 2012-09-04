@@ -12,7 +12,7 @@ App::uses('Controller', 'Controller');
 
 App::uses('InfinitasJobsLib', 'InfinitasJobs.Lib');
 
-class CakeJob extends Object {
+abstract class CakeJob extends Object {
 
 /**
  * Internal array
@@ -29,6 +29,11 @@ class CakeJob extends Object {
 	public $_internals = array();
 
 /**
+ * @brief the method called by DJJob::run() to do the work
+ */
+	abstract public function perform();
+
+	/**
  * Loads and instantiates models required by this controller.
  * If Controller::$persistModel; is true, controller will cache model instances on first request,
  * additional request will used cached models.

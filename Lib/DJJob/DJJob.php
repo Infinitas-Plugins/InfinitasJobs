@@ -28,6 +28,7 @@ class DJJob extends DJBase {
             return true;
 
         } catch (DJRetryException $e) {
+			var_dump($e->getMessage());
             $attempts = self::model()->find('attempts', $this->job_id) + 1;
 
             if($attempts == $this->max_attempts) {
@@ -38,6 +39,7 @@ class DJJob extends DJBase {
             return false;
 
         } catch (Exception $e) {
+			var_dump($e->getMessage());
             self::model()->finishJob($this->job_id, $e->getMessage());
             return false;
         }

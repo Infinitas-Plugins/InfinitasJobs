@@ -1,8 +1,8 @@
 <?php
 App::uses('AppShell', 'Console/Command');
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'InfinitasJobs.Job');
-App::uses('DJJob', 'InfinitasJobs.Lib');
+App::uses('CakeJob', 'InfinitasJobs.Lib/Job');
+App::uses('DJJob', 'InfinitasJobs.Lib/DJJob');
 
 /**
  * InfinitasJobs Task
@@ -31,41 +31,9 @@ class InfinitasJobsTask extends AppShell {
 		'type' => 'mysql',
 	);
 
-/**
- * Initiate InfinitasJobs Task
- *
- * @param object $model
- * @param array $config
- * @return void
- * @access public
- */
-	function configure($config) {
-		$this->settings = array_merge($this->settings, $config);
-		$connection = ConnectionManager::getDataSource($this->settings['connection']);
-
-		if ($this->settings['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
-		} else {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-					"user={$connection->config['login']}",
-					"password={$connection->config['password']}"
-				))
-			);
-		}
-	}
+	public $uses = array(
+		'InfinitasJobs.InfinitasJob'
+	);
 
 /**
  * Returns a job
@@ -117,20 +85,8 @@ class InfinitasJobsTask extends AppShell {
  * @param string $run_at
  * @return boolean True if enqueue is successful, false on failure
  */
-	function enqueue($job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
-	}
-
-/**
- * Bulk Enqueues Jobs using DJJob
- *
- * @param array $jobs
- * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
- */
-	function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	function enqueue($job, $queue = 'default', $run_at = null) {
+		return $this->InfinitasJob->enqueue($job, $queue, $run_at);
 	}
 
 /**
@@ -140,6 +96,6 @@ class InfinitasJobsTask extends AppShell {
  * @return array
  **/
 	function status($queue = "default") {
-		return DJJob::status($queue);
+		return $this->InfinitasJob->status($queue);
 	}
 }
