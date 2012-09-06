@@ -437,9 +437,16 @@ class InfinitasJob extends InfinitasJobsAppModel {
  */
 	public function enqueue($handler, $queue = 'default', $runAt = null) {
 		if(is_array($handler)) {
-			foreach($handler as $data) {
-				self::enqueue($data, $queue, $runAt);
+			$queue = $this->InfinitasJobQueue->find('idFromSlug', $queue);
+			foreach($handler as &$data) {
+				$data = array(
+					'handler' => serialize($data),
+					'infinitas_job_queue_id' => $queue,
+					'run_at' => $runAt == null ? date('Y-m-d H:i:s') : $runAt
+				);
 			}
+
+			$this->rawSave($handler, array('chunk' => 100, 'validate' => false));
 			return true;
 		}
 
