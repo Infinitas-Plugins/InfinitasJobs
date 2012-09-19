@@ -36,6 +36,10 @@ class WorkerShell extends AppShell {
 		'InfinitasJobs.Status'
 	);
 
+	public function startup() {
+		ini_set('unserialize_callback_func', 'unserialize_jobs');
+		parent::startup();
+	}
 /**
  * Override main() for help message hook
  *
