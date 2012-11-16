@@ -38,7 +38,7 @@ class InfinitasJobsBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	public function setup(&$Model, $config = array()) {
+	public function setup(Model $Model, $config = array()) {
 		$this->settings = array_merge($this->settings, $config);
 		$connection = ConnectionManager::getDataSource($this->settings['connection']);
 
