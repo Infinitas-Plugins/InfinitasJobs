@@ -66,11 +66,11 @@ echo $this->Infinitas->adminIndexHead($filterOptions, $massActions);
 				<tr class="<?php echo $this->Infinitas->rowClass(); ?>">
 					<td><?php echo $this->Infinitas->massActionCheckBox($infinitasJobQueue); ?>&nbsp;</td>
 					<td title="<?php echo $infinitasJobQueue['InfinitasJobQueue']['slug']; ?>"><?php echo $this->Html->adminQuickLink($infinitasJobQueue['InfinitasJobQueue']); ?>&nbsp;</td>
-					<td><?php echo $infinitasJobQueue['InfinitasJobQueue']['pending_job_count']; ?>&nbsp;</td>
-					<td><?php echo $infinitasJobQueue['InfinitasJobQueue']['failed_job_count']; ?>&nbsp;</td>
-					<td><?php echo $infinitasJobQueue['InfinitasJobQueue']['locked_job_count']; ?>&nbsp;</td>
-					<td><?php echo $infinitasJobQueue['InfinitasJobQueue']['completed_job_count']; ?>&nbsp;</td>
-					<td><?php echo CakeTime::niceShort($infinitasJobQueue['InfinitasJobQueue']['modified']); ?>&nbsp;</td>
+					<td><?php echo $this->Design->count($infinitasJobQueue['InfinitasJobQueue']['pending_job_count']); ?>&nbsp;</td>
+					<td><?php echo $this->Design->count($infinitasJobQueue['InfinitasJobQueue']['failed_job_count']); ?>&nbsp;</td>
+					<td><?php echo $this->Design->count($infinitasJobQueue['InfinitasJobQueue']['locked_job_count']); ?>&nbsp;</td>
+					<td><?php echo $this->Design->count($infinitasJobQueue['InfinitasJobQueue']['completed_job_count']); ?>&nbsp;</td>
+					<td><?php echo $this->Infinitas->date($infinitasJobQueue['InfinitasJobQueue']['modified']); ?>&nbsp;</td>
 					<td>
 						<?php
 							$running = false;

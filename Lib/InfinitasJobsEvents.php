@@ -34,19 +34,18 @@ class InfinitasJobsEvents extends AppEvents {
  * @return array
  */
 	public function onAdminMenu(Event $Event) {
-		$menu['main'] = array(
-			'Dashboard' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'dashboard'),
+		$menu = array(
+			'main' => array(
+				'Dashboard' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'dashboard')
+			),
+			'filter' => array(
+				'Running' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_job_queues', 'action' => 'index', 'type' => 'running'),
+				'Pending' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'index'),
+				'Locked' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'index', 'type' => 'locked'),
+				'Failed' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'index', 'type' => 'failed'),
+				'Completed' => array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'index', 'type' => 'completed')
+			)
 		);
-
-		$check = (!empty($Event->Handler->request->params['plugin']) && $Event->Handler->request->params['plugin'] == 'infinitas_jobs') &&
-				(!empty($Event->Handler->request->params['controller']) && $Event->Handler->request->params['controller'] == 'infinitas_jobs');
-
-		if($check) {
-			$menu['main']['Pending'] = array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'index');
-			$menu['main']['Locked'] = array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'locked');
-			$menu['main']['Failed'] = array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'failed');
-			$menu['main']['Completed'] = array('plugin' => 'infinitas_jobs', 'controller' => 'infinitas_jobs', 'action' => 'completed');
-		}
 
 		return $menu;
 	}
