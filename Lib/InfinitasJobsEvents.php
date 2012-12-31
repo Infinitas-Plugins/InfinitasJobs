@@ -1,8 +1,8 @@
 <?php
-CakeLog::config('job_errors', array(
-	'engine' => 'InfinitasJobs.InfinitasJobLogger',
-	'model' => 'InfinitasJobs.InfinitasJobError'
-));
+//CakeLog::config('job_errors', array(
+//	'engine' => 'InfinitasJobs.InfinitasJobLogger',
+//	'model' => 'InfinitasJobs.InfinitasJobError'
+//));
 
 class InfinitasJobsEvents extends AppEvents {
 /**
