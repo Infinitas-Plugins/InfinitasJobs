@@ -44,7 +44,8 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 	);
 
 	public $findMethods = array(
-		'idFromSlug' => true
+		'idFromSlug' => true,
+		'status' => true
 	);
 
 /**
@@ -95,9 +96,21 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 				$this->alias . '.' . $this->primaryKey
 			);
 
-			$query['conditions'] = array(
-				$this->alias . '.slug' => $query[0]
-			);
+			if (substr($query[0], -1) == '*') {
+				$query['conditions'] = array(
+					$this->alias . '.slug LIKE "' . trim($query[0], '*') . '%"'
+				);
+
+				$query['order'] = array(
+					$this->alias . '.pending_job_count' => 'asc'
+				);
+			} else {
+				$query['conditions'] = array(
+					$this->alias . '.slug' => $query[0]
+				);
+			}
+
+			$query['limit'] = 1;
 
 			return $query;
 		}
@@ -120,14 +133,14 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
  *
  * @throws InvalidArgumentException when there is no queue specified
  */
-	protected function _findStatus($state, $query = array(), $results = array()) {
+	protected function _findStatus($state, $query, $results = array()) {
 		if($state == 'before') {
 			if(empty($query[0])) {
 				throw new InvalidArgumentException('You must specify the queue');
 			}
 
 			$this->virtualFields['total_job_count'] = String::insert(
-				'SUM(:alias.:pending, :alias.:failed, :alias.:locked, :alias.:completed)',
+				':alias.:pending + :alias.:failed + :alias.:locked + :alias.:completed',
 				array(
 					'alias' => $this->alias,
 					'pending' => 'pending_job_count',
@@ -149,19 +162,21 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 				$this->alias . '.slug' => $query[0]
 			);
 
-			unset($query[0]);
-
 			return $query;
 		}
 
-        return array(
-            'outstanding' => $results[$this->alias]['pending_job_count'],
-            'locked' => $results[$this->alias]['locked_job_count'],
-            'failed' => $results[$this->alias]['failed_job_count'],
-            'completed' => $results[$this->alias]['completed_job_count'],
-            'total'  => $results[$this->alias]['total_job_count']
-        );
+		if (empty($results)) {
+			return array();
+		}
 
-		return $results;
+		$results = $results[0];
+
+		return array(
+			'outstanding' => $results[$this->alias]['pending_job_count'],
+			'locked' => $results[$this->alias]['locked_job_count'],
+			'failed' => $results[$this->alias]['failed_job_count'],
+			'completed' => $results[$this->alias]['completed_job_count'],
+			'total'  => $results[$this->alias]['total_job_count']
+		);
 	}
 }
