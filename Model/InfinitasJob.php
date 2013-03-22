@@ -18,24 +18,6 @@
  */
 
 class InfinitasJob extends InfinitasJobsAppModel {
-/**
- * Additional behaviours that are attached to this model
- *
- * @access public
- * @var array
- */
-	public $actsAs = array(
-		// 'Libs.Feedable',
-		// 'Libs.Rateable'
-	);
-
-/**
- * How the default ordering on this model is done
- *
- * @access public
- * @var array
- */
-	public $order = array();
 
 	public $noTrash = false;
 
@@ -50,15 +32,6 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		'attempts' => true,
 		'status' => true,
 		'max_attempts' => true
-	);
-
-/**
- * hasOne relations for this model
- *
- * @access public
- * @var array
- */
-	public $hasOne = array(
 	);
 
 /**

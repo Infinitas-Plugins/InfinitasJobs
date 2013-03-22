@@ -22,7 +22,6 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 /**
  * hasMany relations for this model
  *
- * @access public
  * @var array
  */
 	public $hasMany = array(
@@ -34,15 +33,6 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 		)
 	);
 
-/**
- * hasAndBelongsToMany relations for this model
- *
- * @access public
- * @var array
- */
-	public $hasAndBelongsToMany = array(
-	);
-
 	public $findMethods = array(
 		'idFromSlug' => true,
 		'status' => true
@@ -51,8 +41,6 @@ class InfinitasJobQueue extends InfinitasJobsAppModel {
 /**
  * overload the construct method so that you can use translated validation
  * messages.
- *
- * @access public
  *
  * @param mixed $id string uuid or id
  * @param string $table the table that the model is for
