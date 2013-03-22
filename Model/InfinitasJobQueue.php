@@ -18,51 +18,6 @@
  */
 
 class InfinitasJobQueue extends InfinitasJobsAppModel {
-/**
- * The display field for select boxes
- *
- * @access public
- * @var string
- */
-	public $displayField = 'name';
-
-/**
- * Additional behaviours that are attached to this model
- *
- * @access public
- * @var array
- */
-	public $actsAs = array(
-		// 'Libs.Feedable',
-		// 'Libs.Rateable'
-	);
-
-/**
- * How the default ordering on this model is done
- *
- * @access public
- * @var array
- */
-	public $order = array(
-	);
-
-/**
- * hasOne relations for this model
- *
- * @access public
- * @var array
- */
-	public $hasOne = array(
-	);
-
-/**
- * belongsTo relations for this model
- *
- * @access public
- * @var array
- */
-	public $belongsTo = array(
-	);
 
 /**
  * hasMany relations for this model
