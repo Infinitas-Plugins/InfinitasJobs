@@ -2,7 +2,7 @@
 /**
  * @brief fixture file for InfinitasJob tests.
  *
- * @package InfinitasJobs.Fixture
+ * @package .Fixture
  * @since 0.9b1
  */
 class InfinitasJobFixture extends CakeTestFixture {
@@ -29,5 +29,50 @@ class InfinitasJobFixture extends CakeTestFixture {
 	);
 
 	public $records = array(
+		array(
+			'id' => 'job-1a',
+			'infinitas_job_queue_id' => 'queue-1',
+			'host' => null,
+			'pid' => null,
+			'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			'attempts' => 0,
+			'run_at' => '2012-08-13 11:57:22',
+			'completed' => null,
+			'locked' => null,
+			'failed' => null,
+			'infinitas_job_error_count' => 0,
+			'created' => '2013-03-22 16:22:20',
+			'modified' => '2013-03-22 16:22:20'
+		),
+		array(
+			'id' => 'job-1b',
+			'infinitas_job_queue_id' => 'queue-1',
+			'host' => null,
+			'pid' => null,
+			'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			'attempts' => 0,
+			'run_at' => '2012-08-13 11:57:20',
+			'completed' => null,
+			'locked' => null,
+			'failed' => null,
+			'infinitas_job_error_count' => 0,
+			'created' => '2013-03-22 16:22:20',
+			'modified' => '2013-03-22 16:22:20'
+		),
+		array(
+			'id' => 'job-2a',
+			'infinitas_job_queue_id' => 'queue-2',
+			'host' => null,
+			'pid' => null,
+			'handler' => 'O:21:"InfinitasJobs_TestJob":1:{s:10:"_internals";a:0:{}}',
+			'attempts' => 0,
+			'run_at' => '2013-03-22 16:22:20',
+			'completed' => null,
+			'locked' => null,
+			'failed' => null,
+			'infinitas_job_error_count' => 0,
+			'created' => '2013-03-22 16:22:20',
+			'modified' => '2013-03-22 16:22:20'
+		),
 	);
 }

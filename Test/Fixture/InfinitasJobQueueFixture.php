@@ -43,7 +43,7 @@ class InfinitasJobQueueFixture extends CakeTestFixture {
 			'pid' => null,
 			'created' => '2012-08-13 13:43:56',
 			'modified' => '2012-08-13 13:43:56',
-			'retry_delay' => null
+			'retry_delay' => 7200
 		),
 		array(
 			'id' => 'queue-2',
@@ -58,7 +58,7 @@ class InfinitasJobQueueFixture extends CakeTestFixture {
 			'pid' => null,
 			'created' => '2012-08-13 13:43:56',
 			'modified' => '2012-08-13 13:43:56',
-			'retry_delay' => null
+			'retry_delay' => 7200
 		),
 	);
 }

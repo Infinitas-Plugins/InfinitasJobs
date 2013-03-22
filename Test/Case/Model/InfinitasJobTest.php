@@ -1,7 +1,9 @@
 <?php
 App::uses('InfintasJob', 'InfintasJobs.Model');
+App::uses('InfinitasJobs_TestJob', 'InfinitasJobs.Lib/Job');
 
 class TestInfinitasJob extends CakeTestCase {
+
 /**
  * Fixtures
  *
@@ -11,20 +13,6 @@ class TestInfinitasJob extends CakeTestCase {
 		'plugin.infinitas_jobs.infinitas_job',
 		'plugin.infinitas_jobs.infinitas_job_queue',
 		'plugin.infinitas_jobs.infinitas_job_log',
-		/*'plugin.aqua_modules.aqua_module',
-		'plugin.aqua_modules.core_module',
-		'plugin.aqua_modules.core_module_position',
-		'plugin.aqua_modules.aqua_modules_core_user',
-		'plugin.aqua_companies.aqua_company',
-		'plugin.aqua_companies.aqua_companies_core_user',
-		'plugin.aqua_companies.aqua_user',
-
-		'plugin.users.group',
-		'plugin.themes.theme',
-		'plugin.modules.modules_route',
-		'plugin.routes.route',
-		'plugin.locks.global_lock',
-		'plugin.management.ticket'*/
 	);
 
 /**

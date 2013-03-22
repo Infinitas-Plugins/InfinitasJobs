@@ -1,52 +1,24 @@
 <?php
-	App::import('lib', 'libs.test/AppModelTest');
-	
-	class TestInfinitasJobError extends AppModelTestCase {
+class TestInfinitasJobError extends CakeTestCase {
 
-		/**
-		 * @brief Configuration for the test case
-		 *
-		 * Loading fixtures:
-		 * 
-		 * List all the needed fixtures in the do part of the fixture array.
-		 * In replace you can overwrite fixtures of other plugins by your own.
-		 *
-		 * 'fixtures' => array(
-		 *		'do' => array(
-		 *			'SomePlugin.SomeModel
-		 *		),
-		 *		'replace' => array(
-		 *			'Core.User' => 'SomePlugin.User
-		 *		)
-		 * )
-		 * @var array 
-		 */
-		public $setup = array(
-			'model' => 'InfinitasJobs.InfinitasJobError',
-			'fixtures' => array(
-				'do' => array(
-					'InfinitasJob.InfinitasJobError',
-					'InfinitasJob.InfinitasJob'
-				)
-			)
-		);
+/**
+ * Fixtures
+ *
+ * @var array
+ */
+	public $fixtures = array(
+		'plugin.infinitas_jobs.infinitas_job',
+		'plugin.infinitas_jobs.infinitas_job_queue',
+		'plugin.infinitas_jobs.infinitas_job_log',
+	);
+
+
+	/**
+	 * @brief Tests Validation
+	 *
+	 * @test Enter description here
+	 */
+	public function testValidation() {
 		
-		/**
-		 * @brief Contains a list of test methods to run
-		 *
-		 * If it is set to false all the methods will run. Otherwise pass in an array
-		 * with a list of tests to run.
-		 *
-		 * @var mixed 
-		 */
-		public $tests = false;
-
-		/**
-		 * @brief Tests Validation
-		 *
-		 * @test Enter description here
-		 */
-		public function testValidation() {
-			
-		}
 	}
+}

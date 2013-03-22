@@ -152,15 +152,6 @@ class InfinitasJob extends InfinitasJobsAppModel {
 	);
 
 /**
- * hasAndBelongsToMany relations for this model
- *
- * @access public
- * @var array
- */
-	public $hasAndBelongsToMany = array(
-	);
-
-/**
  * overload the construct method so that you can use translated validation
  * messages.
  *
