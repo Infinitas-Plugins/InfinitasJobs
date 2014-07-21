@@ -26,7 +26,7 @@ class DJWorker extends DJBase {
 		$pid = self::model()->pid();
         $this->name = "host::{$hostname} pid::$pid";
 
-		$this->pidFile = InfinitasPlugin::path('InfinitasJobs') . 'Config' . DS .'Pid' . DS . $this->queue . '.pid';
+		$this->pidFile = CakePlugin::path('InfinitasJobs') . 'Config' . DS .'Pid' . DS . $this->queue . '.pid';
 		$this->pid = $pid;
 
         if (function_exists('pcntl_signal')) {
@@ -67,7 +67,6 @@ class DJWorker extends DJBase {
         try {
             while ($this->count == 0 || $count < $this->count) {
                 if (function_exists("pcntl_signal_dispatch")) pcntl_signal_dispatch();
-
                 $count += 1;
                 $job = self::model()->find('job', $this->queue);
 
@@ -88,10 +87,13 @@ class DJWorker extends DJBase {
                 $job->run();
             }
         } catch (Exception $e) {
+            pr($e);
+            exit;
             $this->log("[JOB] unhandled exception::\"{$e->getMessage()}\"", self::ERROR);
         }
 
-        $this->log("[JOB] worker shutting down after running {$job_count} jobs, over {$count} polling iterations", self::INFO);
+        $notice = "[JOB] worker shutting down after running {$job_count} jobs, over {$count} polling iterations";
+        $this->log($notice, self::INFO);
     }
 
 	/**

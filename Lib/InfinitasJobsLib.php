@@ -1,7 +1,7 @@
 <?php
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'InfinitasJobs.Job');
-App::uses('DJJob', 'InfinitasJobs.Lib');
+App::uses('CakeJob', 'InfinitasJobs.Lib/Job');
+App::uses('DJJob', 'InfinitasJobs.Lib/DJJob');
 
 /**
  * InfinitasJobs Lib
@@ -49,7 +49,7 @@ class InfinitasJobsLib extends Object {
  * @return array
  **/
 	public static function status($queue = "default") {
-		return DJJob::status($queue);
+		return ClassRegistry::init('InfinitasJobs.InfinitasJobQueue')->find('status', $queue);
 	}
 
 }

@@ -1,4 +1,5 @@
 <?php
+App::uses('InfinitasJobsLib', 'InfinitasJobs.Lib');
 class StatusTask extends AppShell {
 
 /**
@@ -45,7 +46,8 @@ class StatusTask extends AppShell {
 			)));
 		}
 
-		$status = DJJob::status($this->params['queue']);
+		$status = InfinitasJobsLib::status($this->params['queue']);
+		pr($status);
 		foreach ($status as $name => $count) {
 			$this->out(sprintf("%s Jobs: %d", Inflector::humanize($name), $count));
 		}

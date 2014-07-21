@@ -152,7 +152,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			),
 			'infinitas_job_queue_id' => array(
 				'validateRecordExists' => array(
-					'rule' => array('validateRecordExists'),
+					'rule' => array('notempty'),
 					'message' => __d('infinitas_jobs', 'The selected queue does not exist'),
 				),
 			)
@@ -428,6 +428,7 @@ class InfinitasJob extends InfinitasJobsAppModel {
 		);
 
         if (!$saved) {
+        	pr($this->validationErrors);
             throw new CakeException('Failed to save the new job');
         }
 
@@ -479,11 +480,11 @@ class InfinitasJob extends InfinitasJobsAppModel {
 
 			$query['joins'][] = array(
 				'table' => 'infinitas_job_queues',
-				'alias' => 'InfinitasJobQueue',
-				'type' => 'left',
+				'alias' => 'InfinitasJobQueueJoin',
+				'type' => 'right',
 				'foreignKey' => false,
 				'conditions' => array(
-					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueue.id',
+					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueueJoin.id',
 				)
 			);
 
@@ -493,11 +494,9 @@ class InfinitasJob extends InfinitasJobsAppModel {
 
 			$query['limit'] = 10;
 
-			unset($query[0]);
-
 			return $query;
 		}
-
+		
 		foreach($results as $k => $job) {
 			try {
 				$this->lockJob($job[$this->alias][$this->primaryKey]);
@@ -588,11 +587,11 @@ class InfinitasJob extends InfinitasJobsAppModel {
 
 			$query['joins'][] = array(
 				'table' => 'infinitas_job_queues',
-				'alias' => 'InfinitasJobQueue',
+				'alias' => 'InfinitasJobQueueJoin',
 				'type' => 'left',
 				'foreignKey' => false,
 				'conditions' => array(
-					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueue.id',
+					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueueJoin.id',
 				)
 			);
 
