@@ -23,6 +23,6 @@
 		"composer/installers": "*"
 	},
 	"extra": {
-		"installer-name": "DebugKit"
+		"installer-name": "InfinitasJobs"
 	}
 }
