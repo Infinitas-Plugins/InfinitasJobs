@@ -598,10 +598,20 @@ class InfinitasJob extends InfinitasJobsAppModel {
 			$query['joins'][] = array(
 				'table' => 'infinitas_job_queues',
 				'alias' => 'InfinitasJobQueueJoin',
-				'type' => 'left',
+				'type' => 'right',
 				'foreignKey' => false,
 				'conditions' => array(
 					'InfinitasJob.infinitas_job_queue_id = InfinitasJobQueueJoin.id',
+				)
+			);
+
+			$query['joins'][] = array(
+				'table' => 'infinitas_job_queues',
+				'alias' => 'InfinitasJobQueue',
+				'type' => 'left',
+				'foreignKey' => false,
+				'conditions' => array(
+					'InfinitasJobQueueJoin.id = InfinitasJobQueue.id',
 				)
 			);
 
