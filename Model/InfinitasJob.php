@@ -488,6 +488,16 @@ class InfinitasJob extends InfinitasJobsAppModel {
 				)
 			);
 
+			$query['joins'][] = array(
+				'table' => 'infinitas_job_queues',
+				'alias' => 'InfinitasJobQueue',
+				'type' => 'left',
+				'foreignKey' => false,
+				'conditions' => array(
+					'InfinitasJobQueueJoin.id = InfinitasJobQueue.id',
+				)
+			);
+
 			$query['order'] = array(
 				$this->alias . '.run_at' => 'desc'
 			);
